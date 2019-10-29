@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  dashboard:
+    build: cabify-dashboard/
+    ports:
+     - "8080:8080"
+    environment:
+      - ES_ENDPOINT_EXTERNAL=${ES_ENDPOINT_EXTERNAL}
+      - NODE_PATH=${NODE_PATH}
+      - APP_NAME=${DASHBOARD_NAME}
+    volumes:
+     - ./cabify-dashboard/:/usr/src/app/
+    networks:
+      - dashboard-network
+
+networks:
+  dashboard-network:
+    driver: bridge
