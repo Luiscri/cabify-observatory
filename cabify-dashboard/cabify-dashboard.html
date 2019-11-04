@@ -5,13 +5,11 @@
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/podium-chart/podium-chart.html">
+<link rel="import" href="/elements/main-notice-frame/main-notice-frame.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -25,15 +23,21 @@
                 <img src="img/logoCatedra.png" style="height: 150px; width: auto;">
             </div>
         </div>
-  
+
+        <div class="container-fluid">
+            <main-notice-frame
+                data="{{}}"
+                defaultImage="elements/main-notice-frame/assets/img/defaultImage.jpg"
+                height="500">
+            </main-notice-frame>
+        </div>
+        
         <div class="container my-5">
             <material-search
                 active=True
                 search-value="{{query}}"
                 filters="{{filters}}">        
             </material-search>
-            
-
         </div>
 
         <div class="footer">

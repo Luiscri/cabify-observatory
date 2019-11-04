@@ -1,0 +1,116 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<dom-module id="main-notice-frame">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="import" type="css" href="main-notice-frame.css">
+
+    <template>
+        <div style$="height: {{height}}px;">
+            <div class="row h-100">
+                <div class="col-12 col-md-5 h-100 p-0">
+                    <div
+                        id="article-image"
+                        class="h-100 w-100"
+                        style$="background-image: url('{{getArticleImage()}}')"
+                    >
+                    </div>
+                </div>
+                <div class="col-12 col-md-7 h-100" style$="background-color: #{{bgcolor}};">
+                    <div>
+                        <h1>Adiós</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'main-notice-frame',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                height: {
+                    type: String,
+                    value: '500'
+                },
+
+                bgcolor: {
+                    type: String,
+                    value: 'e0e6e9'
+                },
+
+                article: {
+                    type: Object,
+                },
+
+                defaultImage: {
+                    type: String
+                },
+
+                fields: {
+                  type: Array,
+                  value: function() { return []; }
+                },
+
+                filters: {
+                  type: Array,
+                  notify: true,
+                  value: function() { return []; }
+                }
+            },
+
+            _dataChanged: function() {
+                var that = this
+                /*
+                var hits = that.data.hits.hits
+                hits.forEach(function(event) {
+                    if(event._source.id == "1"){
+                        that.event1 = event._source
+                    }else if(event._source.id == "2"){
+                        that.event2 = event._source
+                    }else{
+                        that.event3 = event._source
+                    }
+                })
+                */
+            },
+
+            getArticleImage: function() {
+                console.log(this.bgcolor)
+                try{
+                    // var image = this.article.schema.thumbnailUrl
+                    //var image = "https://img.europapress.es/fotoweb/fotonoticia_20191020112956_800.jpg"
+                    var image = "elements/main-notice-frame/assets/img/defaultImage2.jpg"
+
+                    // Check if thumbnail
+                    if(image == "null"){
+                        return defaultImage
+                    }
+
+                    // Check thumbnail size
+                    var img = new Image();
+                    img.src= image
+                    // Hay que hacer getElementById porque cuando la imagen se carga js ya ha asignado la url a la imagen
+                    img.onload = function(){
+                        if(this.width < 300 || this.height < 300){
+                            // alert (this.width + " " + this.height)
+                            document.getElementById('article-image').style.backgroundImage = "url(elements/main-notice-frame/assets/img/defaultImage.jpg)"
+                            
+                            // return "elements/main-notice-frame/assets/img/defaultImage.jpg"
+                        }
+                    };
+                }
+                catch(error){
+                    var image = defaultImage
+                }
+                return image
+            }
+        });
+    </script>
+</dom-module>
