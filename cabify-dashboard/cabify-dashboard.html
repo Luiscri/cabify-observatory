@@ -26,8 +26,8 @@
 
         <div class="container-fluid">
             <main-notice-frame
-                data="{{}}"
-                defaultImage="elements/main-notice-frame/assets/img/defaultImage.jpg"
+                data="{{articlesData}}"
+                defaultimage="elements/main-notice-frame/assets/img/defaultImage.jpg"
                 height="500">
             </main-notice-frame>
         </div>
@@ -55,12 +55,8 @@
                   value: 0
                 }, 
 
-                tweetsData: {
+                articlesData: {
                   type: Object
-                },
-
-                eventsData: {
-                    type: Object
                 },
 
                 query: {
@@ -101,16 +97,6 @@
                 console.log("Ready");
             },
 
-            getPlaces: function(data){
-                var places = []
-                data.hits.hits.forEach(function(entry){
-                    if('lat' in entry._source){
-                        places.push({'lat': entry._source.lat, 'lon': entry._source.lon});
-                    }
-                });
-                return places;
-            },
-
             _clientChanged: function() {
                 console.log("ClientChanged");
                 ready = true;
@@ -142,8 +128,8 @@
                 if(ready){
                     this.client.search({
                         // undocumented params are appended to the query string
-                        index: "mabsed-tweets",
-                        type: "tweet",
+                        index: "articles",
+                        type: "article",
                         body: {
                             size: 1000,
                             query: {
@@ -152,64 +138,12 @@
                                 }
                             },
                             aggs: {
-                                eventId: {
-                                    terms: {
-                                        field: "eventId",
-                                        order: {
-                                            _count: "desc"
-                                        }
-                                    }
-                                },
 
-                                lat: {
-                                    terms: {
-                                        field: "lat",
-                                        order: {
-                                        _count: "desc"
-                                        }
-                                    }
-                                },
-
-                                lon: {
-                                    terms: {
-                                        field: "lon",
-                                        order: {
-                                        _count: "desc"
-                                        }
-                                    }
-                                }
                             }      
                         }
                     }).then(function(resp) {
-                        that.tweetsData = resp;
-                        console.log("Tweets uploaded");
-                    });
-
-                    this.client.search({
-                        // undocumented params are appended to the query string
-                        index: "mabsed-events",
-                        type: "event",
-                        body: {
-                            size: 10,
-                            query: {
-                                bool: {
-                                    must: this.filters,
-                                }
-                            },
-                            aggs: {
-                                eventId: {
-                                    terms: {
-                                        field: "id.keyword",
-                                        order: {
-                                            _count: "desc"
-                                        }
-                                    }
-                                }
-                            }      
-                        }
-                    }).then(function(resp) {
-                        that.eventsData = resp;
-                        console.log("Events uploaded")
+                        that.articlesData = resp;
+                        console.log("Articles uploaded");
                     });
                 }
             }

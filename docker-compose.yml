@@ -14,7 +14,7 @@ services:
     networks:
       - dashboard-network
 
-    elasticsearch:
+  elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
     environment:
       - bootstrap.memory_lock=true
