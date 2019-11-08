@@ -6,6 +6,7 @@
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/podium-chart/podium-chart.html">
 <link rel="import" href="/elements/main-article-frame/main-article-frame.html">
+<link rel="import" href="/elements/news-loader/news-loader.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 
 <!-- Latest compiled and minified CSS -->
@@ -40,6 +41,13 @@
             </material-search>
         </div>
 
+         <div>
+            <news-loader 
+                data="{{articlesData2}}"
+                defaultImage="elements/main-article-frame/assets/img/defaultImage.jpg">
+            </news-loader>
+        </div>
+
         <div class="footer">
             <img class="gsi_logo" src="img/gsi_blanco.svg">
         </div>
@@ -57,6 +65,10 @@
 
                 articlesData: {
                   type: Object
+                },
+
+                articlesData2: {
+                    type: Object
                 },
 
                 query: {
@@ -142,8 +154,11 @@
                             }      
                         }
                     }).then(function(resp) {
+                        that.articlesData2 = resp;
                         that.articlesData = resp;
+                        
                         console.log("Articles uploaded");
+
                     });
                 }
             }
