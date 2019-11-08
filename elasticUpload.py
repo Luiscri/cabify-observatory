@@ -27,7 +27,7 @@ def upload(index):
         for line in file:
             doc=json.loads(line)
             if args.idx.lower() == 'articles':
-                res = es.index(index=index, id=doc['@id'], doc_type='article', body=doc)
+                res = es.index(index=index, id=doc['id'], doc_type='article', body=doc)
             '''
             else:
                 res = es.index(index=index, doc_type='tweet', body=doc)

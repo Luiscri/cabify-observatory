@@ -7,9 +7,11 @@ from datetime import datetime, timedelta
 import os
 
 def cleanText(text):
-    text= re.sub(r'(?:\s{2,})',' ',text)
-    text=re.sub('\n\n','\n',text)
-    text=unidecode(text)
+    text = re.sub(r'(?:\s{2,})', ' ', text)
+    text = re.sub('\n\n', '\n', text)
+    cleanTags = re.compile('<.*?>')
+    text = re.sub(cleanTags, '', text)
+    text = unidecode(text)
     return(text)
 
 '''
@@ -48,8 +50,12 @@ def retrieveAllNews(query, lang, date):
         a = Article(article['url'])
         aux["@type"] = "schema:NewsArticle"
         aux["@id"] = article['url']
-        aux["_id"] = article['url']
+        aux["id"] = article['url']
+        aux["schema:author"] = article['source']['name']
+        #aux["schema:author"] = uriResource(article['source']['name'])
         aux["schema:datePublished"] =article['publishedAt']
+        aux["schema:headline"] =  article['title']
+        print("{}. {}".format(idx+1, article['title']))
         try: # Necesitamos el try por si borran algun articulo y la URL ya no esta disponible
             a.download()
             a.parse()
@@ -62,10 +68,7 @@ def retrieveAllNews(query, lang, date):
             aux["schema:articleBody"] = cleanText(article['content'])
             aux["schema:about"] = query
             pass
-        #aux["schema:author"] = uriResource(article['source']['name'])
-        aux["schema:author"] = article['source']['name']
-        aux["schema:headline"] =  article['title']
-        print("{}. {}".format(idx+1, article['title']))
+        aux["schema:description"] = cleanText(article['description'])
         aux["schema:query"] = query
         aux["schema:thumbnailUrl"] = article['urlToImage']
         news.append(aux)
