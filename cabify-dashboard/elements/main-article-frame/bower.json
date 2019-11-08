@@ -1,0 +1,23 @@
+{
+  "name": "main-notice-frame",
+  "authors": [
+    "Luis Cristobal Lopez Garcia",
+    "gsi"
+  ],
+  "version":"1.0.0",
+  "description": "A styled frame for displaying part of an article with a side image and a 'See more' button.",
+  "main": "main-notice-frame.html",
+  "keywords": [
+    "notice",
+    "article",
+    "image",
+    "polymer",
+    "webcomponents"
+  ],
+  "dependencies": {
+    "polymer": "polymer#*",
+    "iron-icons": "PolymerElements/iron-icons#*"
+  },
+  "license": "MIT",
+  "homepage": "https://lab.cluster.gsi.dit.upm.es/sefarad/tweet-chart"
+}

@@ -5,13 +5,11 @@
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/podium-chart/podium-chart.html">
+<link rel="import" href="/elements/main-article-frame/main-article-frame.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -25,15 +23,21 @@
                 <img src="img/logoCatedra.png" style="height: 150px; width: auto;">
             </div>
         </div>
-  
+
+        <div class="container-fluid">
+            <main-article-frame
+                data="{{articlesData}}"
+                defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg"
+                height="500">
+            </main-article-frame>
+        </div>
+        
         <div class="container my-5">
             <material-search
                 active=True
                 search-value="{{query}}"
                 filters="{{filters}}">        
             </material-search>
-            
-
         </div>
 
         <div class="footer">
@@ -51,12 +55,8 @@
                   value: 0
                 }, 
 
-                tweetsData: {
+                articlesData: {
                   type: Object
-                },
-
-                eventsData: {
-                    type: Object
                 },
 
                 query: {
@@ -97,16 +97,6 @@
                 console.log("Ready");
             },
 
-            getPlaces: function(data){
-                var places = []
-                data.hits.hits.forEach(function(entry){
-                    if('lat' in entry._source){
-                        places.push({'lat': entry._source.lat, 'lon': entry._source.lon});
-                    }
-                });
-                return places;
-            },
-
             _clientChanged: function() {
                 console.log("ClientChanged");
                 ready = true;
@@ -138,8 +128,8 @@
                 if(ready){
                     this.client.search({
                         // undocumented params are appended to the query string
-                        index: "mabsed-tweets",
-                        type: "tweet",
+                        index: "articles",
+                        type: "article",
                         body: {
                             size: 1000,
                             query: {
@@ -148,64 +138,12 @@
                                 }
                             },
                             aggs: {
-                                eventId: {
-                                    terms: {
-                                        field: "eventId",
-                                        order: {
-                                            _count: "desc"
-                                        }
-                                    }
-                                },
 
-                                lat: {
-                                    terms: {
-                                        field: "lat",
-                                        order: {
-                                        _count: "desc"
-                                        }
-                                    }
-                                },
-
-                                lon: {
-                                    terms: {
-                                        field: "lon",
-                                        order: {
-                                        _count: "desc"
-                                        }
-                                    }
-                                }
                             }      
                         }
                     }).then(function(resp) {
-                        that.tweetsData = resp;
-                        console.log("Tweets uploaded");
-                    });
-
-                    this.client.search({
-                        // undocumented params are appended to the query string
-                        index: "mabsed-events",
-                        type: "event",
-                        body: {
-                            size: 10,
-                            query: {
-                                bool: {
-                                    must: this.filters,
-                                }
-                            },
-                            aggs: {
-                                eventId: {
-                                    terms: {
-                                        field: "id.keyword",
-                                        order: {
-                                            _count: "desc"
-                                        }
-                                    }
-                                }
-                            }      
-                        }
-                    }).then(function(resp) {
-                        that.eventsData = resp;
-                        console.log("Events uploaded")
+                        that.articlesData = resp;
+                        console.log("Articles uploaded");
                     });
                 }
             }

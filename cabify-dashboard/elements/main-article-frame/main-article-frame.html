@@ -1,0 +1,140 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+
+<dom-module id="main-article-frame">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="import" type="css" href="main-article-frame.css">
+
+    <template>
+        <div
+            class="row"
+            style$="height: {{height}}px; background-color: #{{bgcolor}};"
+        >
+            <div class="col-12 col-md-5 h-100 p-0 image-container">
+                <div
+                    id="main-article-image"
+                    class="h-100 w-100 img-blur"
+                    style$="background-image: url('{{getArticleImage(article)}}');"
+                >
+                </div>
+                <div class="overlay">{{getArticleDescription(article)}}</div>
+            </div>
+            <div class="col-12 col-md-7 h-100">
+                <div class="h-100 content-box">
+                    <div>
+                        <div class="article-headline">{{article.schema:headline}}</div>
+                        <div class="article-author mt-1">{{article.schema:author}}</div>
+                        <div class="article-date">{{getArticleDate(article)}}</div>
+                    </div>
+                    <div class="article-body">{{getArticleBody(article)}}</div>
+                    <div id="button-box">
+                        <div><iron-icon icon="label" class="mr-1"></iron-icon>Etiquetas: </div>
+                        <button class="see-more-button mr-4" style="vertical-align:middle">
+                            <span>Leer más</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'main-article-frame',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                defaultimage: {
+                    type: String
+                },
+
+                height: {
+                    type: String,
+                    value: '500'
+                },
+
+                bgcolor: {
+                    type: String,
+                    value: 'e0e6e9'
+                },
+
+                article: {
+                    type: Object
+                },
+
+                fields: {
+                  type: Array,
+                  value: function() { return []; }
+                },
+
+                filters: {
+                  type: Array,
+                  notify: true,
+                  value: function() { return []; }
+                }
+            },
+
+            _dataChanged: function() {
+                let that = this
+                let hits = that.data.hits.hits
+                this.article = hits[0]._source
+                //console.log(this.article)
+            },
+
+            getArticleImage: function(article) {
+                let defaultImage = this.defaultimage
+                try{
+                    let image = article['schema:thumbnailUrl']
+
+                    // Check thumbnail existence
+                    if(image == "null"){
+                        return defaultImage
+                    }
+
+                    // Check thumbnail url and size
+                    let img = new Image()
+                    img.src = image
+                    img.onerror = function(){
+                        document.getElementById('main-article-image').style.backgroundImage = "url("+defaultImage+")"
+                        //alert("Enlace roto")
+                    }
+                    img.onload = function(){
+                        if(this.width < 250 || this.height < 250){
+                            document.getElementById('main-article-image').style.backgroundImage = "url("+defaultImage+")"
+                            //alert(this.width + " " + this.height)
+                        }
+                    }
+                    return image
+                }catch(error){
+                    return defaultImage
+                }
+            },
+
+            getArticleDescription: function(article) {
+                let descriptionExcerpt = article['schema:description'].slice(0,50)
+                if(descriptionExcerpt.slice(-1) == "." || descriptionExcerpt.slice(-1) == " " || descriptionExcerpt.slice(-1) == ",")
+                    descriptionExcerpt = descriptionExcerpt.slice(0, -1)
+                return descriptionExcerpt + "..."
+            },
+
+            getArticleDate: function(article) {
+                let stringDate = article['schema:datePublished']
+                let date = moment(stringDate, "YYYY-MM-DDThh:mm:ssTZD");
+                return date.format("DD/MM/YYYY")
+            },
+
+            getArticleBody: function(article) {
+                let bodyExcerpt = article['schema:articleBody'].slice(0,500)
+                if(bodyExcerpt.slice(-1) == "." || bodyExcerpt.slice(-1) ==  " " || bodyExcerpt.slice(-1) ==  ",")
+                    bodyExcerpt = bodyExcerpt.slice(0, -1)
+                return bodyExcerpt + "..."
+            },
+        });
+    </script>
+</dom-module>
