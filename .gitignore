@@ -1,2 +1,2 @@
-./scrapper/news.txt
-./elasticUpload.py
+scrapper/news.txt
+elasticUpload.py
