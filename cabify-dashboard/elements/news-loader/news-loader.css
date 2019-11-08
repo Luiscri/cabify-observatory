@@ -1,0 +1,134 @@
+.newsContainer {
+      display:block;
+      justify-content: center;
+      align-content: center;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+    }
+
+    .newsImage {/*mirar object-fit: cover; y object-position: center*/
+      width: 100%;
+      object-position: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .title {
+      color: black;
+      font-weight: 550;
+      margin-top: 50px;
+      margin-left: 10px;
+
+      font-family: Raleway-Medium;
+      font-size: 30px;
+      line-height: 35px;
+    }
+
+    hr {
+      /*margin-right: 30px;
+      margin-left: 30px;*/
+      background-color: grey;
+      height: 2px;
+      margin-top: 0px;
+    }
+
+    .hrFinal {
+      /*margin-right: 30px;
+      margin-left: 30px;*/
+      background-color: #E6E6FA;
+      height: 1px;
+      margin-top: 75px;
+      width: 130%;
+      align-content: center;
+      margin-left: -13%;
+    }
+
+    .newsResume {
+      margin-top: 10px;
+      margin-right: 50px;
+      margin-left: 50px;
+      justify-content: center;
+      align-content: center;
+      font-family: Raleway-Medium;
+    }
+
+    button{
+      float: right;
+      margin-right: 5px;
+    }
+
+    .metadata {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    .imageIcon {
+      float: left;
+      width: 2%;
+      margin-top: 4px;
+      margin-left: 10px;
+    }
+
+    .source {
+      float: left;
+      margin-left: 5px;
+      margin-right: 10px;
+      font-style: oblique;
+      font-family: Raleway-Medium;
+    }
+
+    .underImage {
+      float: left;
+      margin-left: 10px;
+      margin-right: 10px;
+      font-family: Raleway-Medium;
+    }
+
+    .tags {
+      float: right;
+      margin-right: 5px;
+      font-family: Raleway-Medium;
+    }
+
+    .see-more-button {
+    display: inline-block;
+    color: #ffffff;
+    background-color: #107b10;
+    padding: 10px;
+    width: 140px;
+    text-align: center;
+    text-decoration: none;
+    font-family: Raleway-Bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.see-more-button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+.see-more-button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.see-more-button:hover span {
+    padding-right: 25px;
+}
+
+.see-more-button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+

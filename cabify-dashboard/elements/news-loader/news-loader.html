@@ -1,0 +1,125 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-dialog/paper-dialog.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+
+<dom-module id="news-loader">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="import" type="css" href="./news-loader.css">
+
+  <template>
+    <template is="dom-repeat" items="{{articles}}" as="articles">
+      <div class= "row" style="margin-top: 30px;">
+          <div class="col-md-2">
+             <!--<p class="coolDate">Fecha bonita</p>-->
+          </div>
+          <div class="col-md-8">
+            <div class="newsContainer">
+              <img class="newsImage" src={{articles.schema:thumbnailUrl}} onerror="this.src='elements/main-article-frame/assets/img/defaultImage.jpg'">
+            </div>
+            <div class="metadata">
+              <img class="imageIcon" src={{getFavIcon(articles)}}>
+              <a class="source"  target="_blank" href= https://{{getSources(articles)}}>{{getSources(articles)}}</a>
+              <img class="imageIcon" src="./assets/img/calendar.png">
+              <p class="underImage">{{getDate(articles)}}</p>
+              <div class="tags"><iron-icon icon="label" class="mr-1"></iron-icon>Etiquetas</div>
+            </div>
+              <h3 class="title">
+                {{articles.schema:headline}}
+              </h3>
+  			   <hr>
+  			   <div class="newsResume">
+  				    <p>
+  				    {{getText(articles)}}
+  				    </p>
+  			   </div>
+  			     <!--<form action={{articles.id}} target="_blank">
+              <input type="submit" value="Leer Más" />
+            </form>-->
+            <button class="see-more-button mr-4" style="vertical-align:middle">
+                <span>Leer más</span>
+            </button>
+            <hr class="hrFinal">
+				    </div>
+          <div class="col-md-2">
+          </div>
+      </div>
+    </template>
+  </template>
+
+  <script>
+
+    Polymer({
+      is: 'news-loader',
+      properties: {
+        data: {
+          type: Object,
+          observer: '_dataChanged'
+        },
+
+        articles:{
+          type: Array,
+          value: [],
+        },
+
+        defaultImage: {
+          type: String
+        }
+      },
+
+      ready: function() {   
+
+      },
+
+      _dataChanged: function() {
+        console.log('HOLA')
+        var that = this;
+        var hits = this.data.hits.hits;
+        var results = []
+         
+        hits.forEach(function(article) {
+            results.push(article._source);
+            console.log(article._source['schema:datePublished'])
+        });
+        that.articles = results;
+        console.log(this.articles)
+      },
+
+      getSources: function(article) {
+        source = article.id;
+        var match = source.match(/:\/\/([0-9]?\.)?(.[^/:]+)/i);
+        if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+          return match[2];
+        }
+        else {
+          return null;
+        }
+      },
+
+      getFavIcon: function(article) {
+        source = this.getSources(article);
+        return "http://www.google.com/s2/favicons?domain=" + source;
+      },
+
+      getArticles: function(articles) {
+        return articles
+      },
+
+      getDate: function(article) {
+        date = article['schema:datePublished'];
+        return date.substring(0,10);
+      },
+
+      getDefaultImage: function(article) {
+        return "elements/main-article-frame/assets/img/defaultImage.jpg";
+      },
+
+      getText: function(article) {
+        text = article['schema:articleBody'];
+        return text.substring(0,500) + '[...]';
+      }
+    });
+
+  </script>
+
+</dom-module>
