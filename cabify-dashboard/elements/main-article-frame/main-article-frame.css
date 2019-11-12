@@ -46,7 +46,8 @@
     -webkit-transition: .3s ease-in-out;
     transition: .3s ease-in-out;
 }
-.img-blur:hover {
+
+.image-container:hover .img-blur {
     -webkit-filter: blur(3px);
     -moz-filter: blur(3px);
     -o-filter: blur(3px);
@@ -107,6 +108,11 @@
     text-align: justify;
 }
 
+.icon {
+    height: 20px;
+    width: auto;
+}
+
 /****************
 *     Button    *
 ****************/
@@ -115,6 +121,14 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center; 
+}
+
+.center-icon-text {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .see-more-button {

@@ -43,7 +43,7 @@
 
          <div>
             <news-loader 
-                data="{{articlesData2}}"
+                data="{{articlesData}}"
                 defaultImage="elements/main-article-frame/assets/img/defaultImage.jpg">
             </news-loader>
         </div>
@@ -154,9 +154,7 @@
                             }      
                         }
                     }).then(function(resp) {
-                        that.articlesData2 = resp;
                         that.articlesData = resp;
-                        
                         console.log("Articles uploaded");
 
                     });

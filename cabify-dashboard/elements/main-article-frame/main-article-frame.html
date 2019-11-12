@@ -24,12 +24,21 @@
                 <div class="h-100 content-box">
                     <div>
                         <div class="article-headline">{{article.schema:headline}}</div>
-                        <div class="article-author mt-1">{{article.schema:author}}</div>
-                        <div class="article-date">{{getArticleDate(article)}}</div>
+                        <div class="center-icon-text mt-2">
+                            <img class="icon mr-2 mt-1" src={{getFavIcon(article)}}>
+                            <div class="article-author mt-1">{{article.schema:author}}</div>
+                        </div>
+                        <div class="center-icon-text">
+                            <iron-icon icon="date-range" class="icon mr-2"></iron-icon>
+                            <div class="article-date">{{getArticleDate(article)}}</div>    
+                        </div>   
+                        
                     </div>
                     <div class="article-body">{{getArticleBody(article)}}</div>
                     <div id="button-box">
-                        <div><iron-icon icon="label" class="mr-1"></iron-icon>Etiquetas: </div>
+                        <div class="center-icon-text">
+                            <iron-icon icon="label" class="icon mr-1"></iron-icon>Etiquetas: 
+                        </div>
                         <button class="see-more-button mr-4" style="vertical-align:middle">
                             <span>Leer más</span>
                         </button>
@@ -120,20 +129,39 @@
                 let descriptionExcerpt = article['schema:description'].slice(0,50)
                 if(descriptionExcerpt.slice(-1) == "." || descriptionExcerpt.slice(-1) == " " || descriptionExcerpt.slice(-1) == ",")
                     descriptionExcerpt = descriptionExcerpt.slice(0, -1)
-                return descriptionExcerpt + "..."
+                return descriptionExcerpt + " [...]"
+            },
+
+            getSources: function(article) {
+                source = article.id;
+                var match = source.match(/:\/\/([0-9]?\.)?(.[^/:]+)/i);
+                if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+                  return match[2];
+                }
+                else {
+                  return null;
+                }
+            },
+
+            getFavIcon: function(article) {
+                source = this.getSources(article);
+                return "http://www.google.com/s2/favicons?domain=" + source;
             },
 
             getArticleDate: function(article) {
                 let stringDate = article['schema:datePublished']
+                let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
                 let date = moment(stringDate, "YYYY-MM-DDThh:mm:ssTZD");
-                return date.format("DD/MM/YYYY")
+                let month = date.format('M');
+                return `${date.format('D')} ${months[month-1]} ${date.format('YYYY')}`
             },
 
             getArticleBody: function(article) {
                 let bodyExcerpt = article['schema:articleBody'].slice(0,500)
                 if(bodyExcerpt.slice(-1) == "." || bodyExcerpt.slice(-1) ==  " " || bodyExcerpt.slice(-1) ==  ",")
                     bodyExcerpt = bodyExcerpt.slice(0, -1)
-                return bodyExcerpt + "..."
+                return bodyExcerpt + " [...]"
             },
         });
     </script>

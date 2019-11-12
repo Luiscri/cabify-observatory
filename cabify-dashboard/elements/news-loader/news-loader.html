@@ -8,32 +8,32 @@
   <link rel="import" type="css" href="./news-loader.css">
 
   <template>
-    <template is="dom-repeat" items="{{articles}}" as="articles">
+    <template is="dom-repeat" items="{{articles}}" as="article">
       <div class= "row" style="margin-top: 30px;">
           <div class="col-md-2">
              <!--<p class="coolDate">Fecha bonita</p>-->
           </div>
           <div class="col-md-8">
             <div class="newsContainer">
-              <img class="newsImage" src={{articles.schema:thumbnailUrl}} onerror="this.src='elements/main-article-frame/assets/img/defaultImage.jpg'">
+              <img class="newsImage" src={{article.schema:thumbnailUrl}} onerror$="this.src={{defaultimage}}">
             </div>
             <div class="metadata">
-              <img class="imageIcon" src={{getFavIcon(articles)}}>
-              <a class="source"  target="_blank" href= https://{{getSources(articles)}}>{{getSources(articles)}}</a>
+              <img class="imageIcon" src={{getFavIcon(article)}}>
+              <a class="source"  target="_blank" href= https://{{getSources(article)}}>{{getSources(article)}}</a>
               <img class="imageIcon" src="./assets/img/calendar.png">
-              <p class="underImage">{{getDate(articles)}}</p>
-              <div class="tags"><iron-icon icon="label" class="mr-1"></iron-icon>Etiquetas</div>
+              <p class="underImage">{{getDate(article)}}</p>
+              <div class="tags"><iron-icon icon="label" class="mr-1"></iron-icon>Etiquetas:</div>
             </div>
               <h3 class="title">
-                {{articles.schema:headline}}
+                {{article.schema:headline}}
               </h3>
   			   <hr>
   			   <div class="newsResume">
   				    <p>
-  				    {{getText(articles)}}
+  				    {{getText(article)}}
   				    </p>
   			   </div>
-  			     <!--<form action={{articles.id}} target="_blank">
+  			     <!--<form action={{article.id}} target="_blank">
               <input type="submit" value="Leer Más" />
             </form>-->
             <button class="see-more-button mr-4" style="vertical-align:middle">
@@ -62,7 +62,7 @@
           value: [],
         },
 
-        defaultImage: {
+        defaultimage: {
           type: String
         }
       },
@@ -81,8 +81,10 @@
             results.push(article._source);
             console.log(article._source['schema:datePublished'])
         });
-        that.articles = results;
-        console.log(this.articles)
+
+        that.articles = results.slice(1); // Ignore first article
+        console.log(this.defaultimage)
+        //console.log(this.articles)
       },
 
       getSources: function(article) {
@@ -110,16 +112,10 @@
         return date.substring(0,10);
       },
 
-      getDefaultImage: function(article) {
-        return "elements/main-article-frame/assets/img/defaultImage.jpg";
-      },
-
       getText: function(article) {
         text = article['schema:articleBody'];
         return text.substring(0,500) + '[...]';
       }
     });
-
   </script>
-
 </dom-module>
