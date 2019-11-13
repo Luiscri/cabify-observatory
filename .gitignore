@@ -1,2 +1,4 @@
-scrapper/news.txt
 elasticUpload.py
+scrapper/news.txt
+scrapper/clusterScrapper.py
+scrapper/clusterSched.py

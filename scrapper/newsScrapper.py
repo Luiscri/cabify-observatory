@@ -11,7 +11,7 @@ def cleanText(text):
     text = re.sub('\n\n', '\n', text)
     cleanTags = re.compile('<.*?>')
     text = re.sub(cleanTags, '', text)
-    text = unidecode(text)
+    #text = unidecode(text) # Elimina los acentos en el texto
     return(text)
 
 '''
