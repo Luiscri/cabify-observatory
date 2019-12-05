@@ -8,6 +8,7 @@
 <link rel="import" href="/elements/main-article-frame/main-article-frame.html">
 <link rel="import" href="/elements/news-loader/news-loader.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -19,34 +20,40 @@
     <link rel="import" type="css" href="styles/cabify-dashboard.css">
 
     <template>
-        <div class="my-3" class="centerBoth" style="width: 100%;">
+        <div class="centerBoth my-3 w-100">
             <div class="top">
                 <img src="img/logoCatedra.png" style="height: 150px; width: auto;">
             </div>
         </div>
 
-        <div class="container-fluid">
-            <main-article-frame
-                data="{{articlesData}}"
-                defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg"
-                height="500">
-            </main-article-frame>
-        </div>
-        
-        <div class="container my-5">
-            <material-search
-                active=True
-                search-value="{{query}}"
-                filters="{{filters}}">        
-            </material-search>
-        </div>
+        <iron-pages selected="0" style="padding: 0px !important;">
+            <div>
+                <main-article-frame
+                    data="{{articlesData}}"
+                    defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg"
+                    height="500">
+                </main-article-frame>
 
-         <div>
-            <news-loader 
-                data="{{articlesData}}"
-                defaultImage="elements/main-article-frame/assets/img/defaultImage.jpg">
-            </news-loader>
-        </div>
+                <div class="container my-5">
+                    <material-search
+                        active=True
+                        search-value="{{query}}"
+                        filters="{{filters}}">        
+                    </material-search>
+
+                    <div class="mt-5">
+                        <news-loader
+                            data="{{articlesData}}"
+                            defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg">
+                        </news-loader>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h1>Holaaaa</h1>
+            </div>
+        </iron-pages>     
 
         <div class="footer">
             <img class="gsi_logo" src="img/gsi_blanco.svg">
@@ -65,10 +72,6 @@
 
                 articlesData: {
                   type: Object
-                },
-
-                articlesData2: {
-                    type: Object
                 },
 
                 query: {
@@ -106,6 +109,16 @@
             },
 
             ready: function(){
+                let ironPages = Polymer.dom(this.root).querySelector('iron-pages');
+
+                let clickableArticles = Polymer.dom(this.root).querySelectorAll('main-article-frame, news-loader');
+                for(let clickable of clickableArticles){
+                    clickable.addEventListener('articleSelected', function(e){
+                        console.log(e.detail.article);
+                        ironPages.selectIndex(1);
+                    });
+                }
+
                 console.log("Ready");
             },
 
