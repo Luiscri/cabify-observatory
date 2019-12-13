@@ -1,0 +1,232 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+
+<dom-module id="article-viewer">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="import" type="css" href="article-viewer.css">
+
+    <style>
+        :host {
+            --my-elem-right: -9999px !important;
+        }
+
+        #article-container {
+            position: fixed;
+            top: 0;
+            right: var(--my-elem-right);
+            transition: right 0.3s linear;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            overflow: auto;
+            overflow-x: hidden;
+        }
+    </style>
+
+    <template>
+        <div id="article-container">
+            <div class="container-fluid">
+                <div class="row">
+                    <div
+                        class="col-12 upper-bar"
+                        style$="background-color: #{{maincolor}};"
+                    >
+                        <div
+                            class="back-container ml-3"
+                            on-tap="hideArticle"
+                        >
+                            <iron-icon icon="arrow-back" class="back-icon mr-2" style$="color: #{{maincolor}}"></iron-icon>
+                            <div class="back-text bold-text">Volver</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container d-flex flex-column align-items-center my-5">
+                <div class="col-12 col-md-10">
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="article-headline medium-text">{{article.schema:headline}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row my-2">
+                        <div class="col-12 col-md-6 d-flex justify-content-start align-items-center">
+                            <img class="icon-sm mr-2 " src={{getFavIcon(article)}}>
+                            <a class="medium-text article-author" target="_blank" href$="https://{{getSources(article)}}">
+                                {{getSources(article)}}
+                            </a>
+                        </div>
+                        <div class="col12 col-md-6 d-flex justify-content-start justify-content-md-end align-items-center mt-1">
+                            <iron-icon icon="date-range" class="icon-sm mr-2"></iron-icon>
+                            <div class="medium-text">{{getArticleDate(article)}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="image-container">
+                                <img
+                                    class="article-image img-blur mb-2"
+                                    src={{data.schema:thumbnailUrl}}
+                                    onerror$="this.src={{defaultimage}}"
+                                />
+                                <div class="overlay light-text">{{getArticleDescription(article)}}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="article-body light-text">
+                                {{getArticleBody(article)}}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>    
+            </div>
+        </div>
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'article-viewer',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                article: {
+                    type: Object
+                },
+
+                display: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_visibilityChanged'
+                },
+
+                defaultimage: {
+                    type: String
+                },
+
+                maincolor: {
+                    type: String,
+                    value: '107b10'
+                },
+
+                fields: {
+                  type: Array,
+                  value: function() { return []; }
+                },
+
+                filters: {
+                  type: Array,
+                  notify: true,
+                  value: function() { return []; }
+                }
+            },
+
+            _dataChanged: function() {
+                this.article = this.data;
+            },
+
+            _visibilityChanged: function() {
+                if(this.display){
+                    this.customStyle['--my-elem-right'] = '0px';
+                    this.updateStyles();
+                }else {
+                    let hideValue = Math.max(screen.width, screen.height);
+                    this.customStyle['--my-elem-right'] = -(hideValue + 10) + 'px';
+                    this.updateStyles();
+                }
+            },       
+
+            hideArticle: function() {
+               this.display = false;
+               document.body.style.overflow = "scroll";
+               document.body.style.overflowX = "hidden";
+            },
+
+            getArticleImage: function(article) {
+                let defaultImage = this.defaultimage;
+                try{
+                    let image = article['schema:thumbnailUrl']
+
+                    // Check thumbnail existence
+                    if(image == "null"){
+                        return defaultImage
+                    }
+
+                    // Check thumbnail url and size
+                    let img = new Image()
+                    img.src = image
+                    img.onerror = function(){
+                        document.getElementById('main-article-image').style.backgroundImage = "url("+defaultImage+")"
+                        //alert("Enlace roto")
+                    }
+                    img.onload = function(){
+                        if(this.width < 250 || this.height < 250){
+                            document.getElementById('main-article-image').style.backgroundImage = "url("+defaultImage+")"
+                            //alert(this.width + " " + this.height)
+                        }
+                    }
+                    return image
+                }catch(error){
+                    return defaultImage
+                }
+            },
+
+            getArticleDescription: function(article) {
+                if(article){
+                    return article['schema:description'].replace(/\.\.\.|…/g, '[...]')
+                }
+                return null
+            },
+
+            getSources: function(article) {
+                if(article){
+                    source = article.id;
+                    let match = source.match(/:\/\/([0-9]?\.)?(.[^/:]+)/i);
+                    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+                      return match[2];
+                    }
+                }
+                return null
+            },
+
+            getFavIcon: function(article) {
+                if(article){
+                    source = this.getSources(article);
+                    return "http://www.google.com/s2/favicons?domain=" + source;
+                }
+                return null
+            },
+
+            getArticleDate: function(article) {
+                if(article){
+                    let stringDate = article['schema:datePublished']
+                    let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+                    let date = moment(stringDate, "YYYY-MM-DDThh:mm:ssTZD");
+                    let month = date.format('M');
+                    return `${date.format('D')} ${months[month-1]} ${date.format('YYYY')}`
+                }
+                return null
+            },
+
+            getArticleBody: function(article) {
+                if(article){
+                    let body = article['schema:articleBody']
+                    return body.replace(/\n/g, '\n\n')
+                }
+                return null
+            },
+        });
+    </script>
+</dom-module>

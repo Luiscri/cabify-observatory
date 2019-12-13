@@ -7,6 +7,7 @@
 <link rel="import" href="/elements/podium-chart/podium-chart.html">
 <link rel="import" href="/elements/main-article-frame/main-article-frame.html">
 <link rel="import" href="/elements/news-loader/news-loader.html">
+<link rel="import" href="/elements/article-viewer/article-viewer.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 
@@ -44,14 +45,19 @@
                     <div class="mt-5">
                         <news-loader
                             data="{{articlesData}}"
-                            defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg">
+                            defaultimage="./elements/main-article-frame/assets/img/defaultImage.jpg">
                         </news-loader>
                     </div>
                 </div>
+
+                <article-viewer
+                    data=""
+                    defaultimage="./elements/main-article-frame/assets/img/defaultImage.jpg">
+                </article-viewer>
             </div>
 
             <div>
-                <h1>Holaaaa</h1>
+            
             </div>
         </iron-pages>     
 
@@ -109,17 +115,25 @@
             },
 
             ready: function(){
-                let ironPages = Polymer.dom(this.root).querySelector('iron-pages');
+                let that = this;
+                let ironPages = Polymer.dom(that.root).querySelector('iron-pages');
 
-                let clickableArticles = Polymer.dom(this.root).querySelectorAll('main-article-frame, news-loader');
-                for(let clickable of clickableArticles){
+                // Añadimos el listener a los articulos
+                Polymer.dom(that.root).querySelectorAll('main-article-frame, news-loader').forEach(function(clickable){
                     clickable.addEventListener('articleSelected', function(e){
-                        console.log(e.detail.article);
-                        ironPages.selectIndex(1);
+                        Polymer.dom(that.root).querySelector('article-viewer').data = e.detail.article;
+                        Polymer.dom(that.root).querySelector('article-viewer').display = true;
+                        document.body.style.overflow = "hidden";
                     });
-                }
+                });
+
+                //ironPages.selectIndex(1);
 
                 console.log("Ready");
+            },
+
+            sleep: function(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             },
 
             _clientChanged: function() {

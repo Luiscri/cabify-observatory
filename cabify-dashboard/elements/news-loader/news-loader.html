@@ -11,7 +11,7 @@
         <template is="dom-repeat" items="{{articles}}" as="article">
             <div class="row d-flex flex-column align-items-center">
                 <div class="col-12 col-md-8">
-                    <div class="newsContainer">
+                    <div class="imageContainer">
                         <img
                             class="newsImage"
                             src={{article.schema:thumbnailUrl}}
@@ -22,7 +22,7 @@
                     </div>
                     <div class="metadata">
                         <img class="imageIcon" src={{getFavIcon(article)}}>
-                        <a class="source"  target="_blank" href= https://{{getSources(article)}}>{{getSources(article)}}</a>
+                        <a class="source" target="_blank" href$="https://{{getSources(article)}}">{{getSources(article)}}</a>
                         <img class="imageIcon" src="./assets/img/calendar.png">
                         <p class="underImage">{{getDate(article)}}</p>
                         <div class="tags"><iron-icon icon="label" class="mr-1"></iron-icon>Etiquetas:</div>
@@ -41,7 +41,7 @@
                         </p>
                     </div>
                     <div class="see-more-button mr-4" on-tap="handleClick" data-id$="[[article.id]]">
-                        Leer más
+                        <span on-tap="handleClick" data-id$="[[article.id]]">Leer más</span>
                     </div>
                     <hr class="hrFinal">
                 </div>

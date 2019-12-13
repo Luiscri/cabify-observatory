@@ -1,0 +1,23 @@
+{
+  "name": "article-viewer",
+  "authors": [
+    "Luis Cristobal Lopez Garcia",
+    "gsi"
+  ],
+  "version":"1.0.0",
+  "description": "A styled frame for displaying a full article information.",
+  "main": "article-viewer.html",
+  "keywords": [
+    "notice",
+    "article",
+    "image",
+    "polymer",
+    "webcomponents"
+  ],
+  "dependencies": {
+    "polymer": "polymer#*",
+    "iron-icons": "PolymerElements/iron-icons#*"
+  },
+  "license": "MIT",
+  "homepage": "https://lab.cluster.gsi.dit.upm.es/sefarad/"
+}
