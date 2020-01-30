@@ -48,21 +48,18 @@
       width: 100%;
       display: flex;
     }
+    #searchbox{
+      width: 100%;
+    }
   </style>
 
   <template>
     <paper-material elevation="2">
       <paper-toolbar class$="{{_computeHeaderClass(narrow)}}">
-        <div class="row">
-          <div class="col-md-1">
-            <paper-icon-button icon="search" on-tap="toggle"></paper-icon-button>
-          </div>
-          <div class="col-md-11" style="padding-left: 0px">
-            <div hidden$="{{!active}}" class="span">
-              <input id="searchbox" placeholder="Search Field" style="width: 1000px" class="flex" value="{{searchValue::input}}">
-              <paper-icon-button icon="delete" alt="rubbish" on-tap="removeFilters">></paper-icon-button>
-            </div>
-          </div>
+        <paper-icon-button icon="search" on-tap="toggle"></paper-icon-button>
+        <div hidden$="{{!active}}" class="span">
+          <input id="searchbox" placeholder="Search Field" class="flex" value="{{searchValue::input}}">
+          <paper-icon-button icon="delete" alt="rubbish" on-tap="removeFilters">></paper-icon-button>
         </div>
       </paper-toolbar>
     </paper-material>

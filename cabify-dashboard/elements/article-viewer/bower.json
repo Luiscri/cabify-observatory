@@ -1,12 +1,12 @@
 {
-  "name": "main-notice-frame",
+  "name": "articles-loader",
   "authors": [
     "Luis Cristobal Lopez Garcia",
     "gsi"
   ],
   "version":"1.0.0",
-  "description": "A styled frame for displaying part of an article with a side image and a 'See more' button.",
-  "main": "main-notice-frame.html",
+  "description": "A styled frame for loading all the articles given as a parameter.",
+  "main": "articles-loader.html",
   "keywords": [
     "notice",
     "article",

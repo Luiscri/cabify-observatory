@@ -1,13 +1,15 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="/bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="/elements/happymap/happymap-element.html">
 <link rel="import" href="/elements/material-search/material-search.html">
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/podium-chart/podium-chart.html">
-<link rel="import" href="/elements/main-article-frame/main-article-frame.html">
-<link rel="import" href="/elements/news-loader/news-loader.html">
+<link rel="import" href="/elements/articles-loader/articles-loader.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -19,34 +21,39 @@
     <link rel="import" type="css" href="styles/cabify-dashboard.css">
 
     <template>
-        <div class="my-3" class="centerBoth" style="width: 100%;">
+        <div class="centerBoth mt-5 w-100">
             <div class="top">
-                <img src="img/logoCatedra.png" style="height: 150px; width: auto;">
+                <img src="img/logoObservatorio.png" style="width: 70%; height: auto;">
             </div>
         </div>
 
-        <div class="container-fluid">
-            <main-article-frame
-                data="{{articlesData}}"
-                defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg"
-                height="500">
-            </main-article-frame>
-        </div>
-        
         <div class="container my-5">
+
+            <paper-tabs selected="{{selected}}">
+                <paper-tab>Noticias</paper-tab>
+                <paper-tab>Estadísticas</paper-tab>
+            </paper-tabs>
+
             <material-search
                 active=True
                 search-value="{{query}}"
                 filters="{{filters}}">        
             </material-search>
-        </div>
 
-         <div>
-            <news-loader 
-                data="{{articlesData}}"
-                defaultImage="elements/main-article-frame/assets/img/defaultImage.jpg">
-            </news-loader>
-        </div>
+            <iron-pages selected={{selected}}>
+                <div class="mt-5">
+                    <articles-loader
+                        data="{{articlesData}}"
+                        filters="{{filters}}"
+                    >
+                    </articles-loader>
+                </div>
+
+                <div>
+                
+                </div>
+            </iron-pages>
+        </div>   
 
         <div class="footer">
             <img class="gsi_logo" src="img/gsi_blanco.svg">
@@ -65,10 +72,6 @@
 
                 articlesData: {
                   type: Object
-                },
-
-                articlesData2: {
-                    type: Object
                 },
 
                 query: {
@@ -106,6 +109,20 @@
             },
 
             ready: function(){
+                /*
+                let that = this;
+                let ironPages = Polymer.dom(that.root).querySelector('iron-pages');
+
+                // Añadimos el listener a los articulos
+                Polymer.dom(that.root).querySelectorAll('main-article-frame, news-loader').forEach(function(clickable){
+                    clickable.addEventListener('articleSelected', function(e){
+                        Polymer.dom(that.root).querySelector('article-viewer').data = e.detail.article;
+                        Polymer.dom(that.root).querySelector('article-viewer').display = true;
+                        document.body.style.overflow = "hidden";
+                    });
+                });
+                */
+
                 console.log("Ready");
             },
 
@@ -150,7 +167,25 @@
                                 }
                             },
                             aggs: {
-
+                                'entities.name': {
+                                    terms: {
+                                        field: "entities.schema:name.keyword",
+                                        size : 50,
+                                        order: {
+                                            _count: "desc"
+                                        }
+                                    },
+                                    aggs: {
+                                        'entity_type': {
+                                            "top_hits": {
+                                                "_source": {
+                                                    "includes": ["entities.@type","entities.schema:name"]
+                                                },
+                                                "size" : 1
+                                            }
+                                        }
+                                    }
+                                },
                             }      
                         }
                     }).then(function(resp) {

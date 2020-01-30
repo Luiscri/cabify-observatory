@@ -1,0 +1,293 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+</script>
+
+<dom-module id="article-viewer">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="import" type="css" href="article-viewer.css">
+
+    <style>
+        :host {
+            --my-elem-right: -9999px !important;
+        }
+
+        #viewer-container {
+            position: fixed;
+            top: 0;
+            right: var(--my-elem-right);
+            transition: right 0.3s linear;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            overflow: auto;
+            overflow-x: hidden;
+        }
+    </style>
+
+    <template>
+        <div id="viewer-container">
+            <div class="container-fluid">
+                <div class="row">
+                    <div
+                        class="col-12 upper-bar"
+                        style$="background-color: #{{maincolor}};"
+                    >
+                        <div
+                            class="back-container ml-3"
+                            on-tap="hideArticle"
+                        >
+                            <iron-icon icon="arrow-back" class="back-icon mr-2" style$="color: #{{maincolor}}"></iron-icon>
+                            <div class="back-text bold-text">Volver</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container d-flex flex-column align-items-center my-5">
+                <div  class="col-12 col-md-10">
+                    <div class="row mt-4 mb-2">
+                        <div class="col-12">
+                            <div class="article-headline medium-text">{{article.schema:headline}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-1">
+                        <div class="col-12">
+                            <div class="image-container">
+                                <img
+                                    id="viewer-image"
+                                    class="article-image img-blur mb-2"
+                                    src={{getArticleImage(article)}}
+                                    onerror$="this.src='{{defaultimage}}'"
+                                    alt="{{getArticleDescription(article)}}"
+                                />
+                                <div class="overlay light-text">{{getArticleDescription(article)}}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-6 d-flex justify-content-start align-items-center">
+                            <img class="icon-sm mr-2 " src={{getFavIcon(article)}}>
+                            <a class="medium-text article-author" target="_blank" href$="https://{{getSources(article)}}">
+                                {{getSources(article)}}
+                            </a>
+                        </div>
+                        <div class="col12 col-md-6 d-flex justify-content-start justify-content-md-end align-items-center mt-1">
+                            <iron-icon icon="date-range" class="icon-sm mr-2"></iron-icon>
+                            <div class="medium-text">{{getArticleDate(article)}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="article-headline medium-text mb-1">Entidades:</div>
+
+                            <div class="d-flex align-items-center medium-text">
+                                <div class="square place" style="margin-left: 0px;"></div>Lugar
+                                <div class="square organization"></div>Organización
+                                <div class="square person"></div>Persona
+                            </div>
+
+                            <template is="dom-repeat" items="{{article.entities}}" as="entity">
+                                <span
+                                    class="badge badge-secondary p-1"
+                                    on-tap="highlightEntity"
+                                    style$="background-color: {{getEntityBackground(entity)}};"
+                                >
+                                    {{entity.schema:name}}
+                                </span>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="article-headline medium-text mb-1">Artículo:</div>
+
+                            <div role="tabpanel" id="panel">
+                                <div
+                                    id="article-body"
+                                    class="article-body light-text"
+                                ></div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                </div>    
+            </div>
+        </div>
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'article-viewer',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                article: {
+                    type: Object
+                },
+
+                display: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_visibilityChanged'
+                },
+
+                defaultimage: {
+                    type: String
+                },
+
+                maincolor: {
+                    type: String,
+                    value: '7250ff'
+                },
+
+                fields: {
+                  type: Array,
+                  value: function() { return []; }
+                },
+
+                filters: {
+                  type: Array,
+                  notify: true,
+                  value: function() { return []; }
+                }
+            },
+
+            _dataChanged: function() {
+                this.article = this.data;
+            },
+
+            _visibilityChanged: function() {
+                if(this.display){
+                    document.getElementById("article-body").innerHTML = this.article['schema:articleBody']
+                    this.customStyle['--my-elem-right'] = '0px';
+                    this.updateStyles();
+                }else{
+                    this.customStyle['--my-elem-right'] = -(screen.width + screen.height) + 'px';
+                    this.updateStyles();
+                }
+            },       
+
+            hideArticle: function() {
+                document.getElementById("viewer-container").scrollBy({top: 0, left: 0});
+                this.display = false;
+                
+                document.body.style.overflow = "scroll";
+                document.body.style.overflowX = "hidden";
+            },
+
+            getEntityBackground: function(entity){
+                if(entity["@type"][0] === "schema:Place")
+                    color = "#ff9900"
+                else if(entity["@type"][0] === "schema:Organization")
+                    color = "#dd4b39"
+                else
+                    color = "#00c0ef"
+
+                return color;
+            },
+
+            highlightEntity: function(e) {
+                var element = document.getElementById("article-body")
+                var text = this.article['schema:articleBody']
+                var text_highlighted=""
+                var beginIndex = e.model.__data__.entity["nif:beginIndex"]
+                var endIndex = e.model.__data__.entity["nif:endIndex"]
+                var cnt=0
+
+                if (beginIndex[0] >= 0) {
+                    if(text[beginIndex[0]]===' ')
+                        cnt+=1
+                    text_highlighted = text.substring(0,beginIndex[0]+cnt) + "<span id='locator' style='background-color:yellow'>" + text.substring(beginIndex[0]+cnt,endIndex[0]+1+cnt) + "</span>"
+                    for(var i =1 ; i<beginIndex.length;i++){
+                        if(text[beginIndex[i]+cnt]===' ')
+                            cnt+=1
+                        text_highlighted+=text.substring(endIndex[i-1]+1+cnt,beginIndex[i]+cnt)
+                        text_highlighted+="<span style='background-color:yellow'>"
+                        text_highlighted+=text.substring(beginIndex[i]+cnt,endIndex[i]+1+cnt)
+                        text_highlighted+="</span>"
+                    }
+                    text_highlighted+= text.substring(endIndex[endIndex.length-1]+1+cnt)
+                    element.innerHTML = text_highlighted
+
+                    //Dynamic Scroll
+                    let elmnt = document.getElementById("locator");
+                    let wrapper = document.getElementById("viewer-container");
+                    let count = elmnt.offsetTop - wrapper.scrollTop + 200;
+                    wrapper.scrollBy({top: count, left: 0, behavior: 'smooth'});                    
+                }
+                
+            },
+
+            getArticleImage: function(article) {
+                if(article)
+                    return article['schema:thumbnailUrl'];
+                return '';
+            },
+
+            getArticleId: function(article) {
+                if(article)
+                    return article['id'];
+                return '';
+            },
+
+            getArticleDescription: function(article) {
+                if(article){
+                    return article['schema:description'].replace(/\.\.\.|…/g, '[...]')
+                }
+                return ''
+            },
+
+            getSources: function(article) {
+                if(article){
+                    source = article.id;
+                    let match = source.match(/:\/\/([0-9]?\.)?(.[^/:]+)/i);
+                    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+                      return match[2];
+                    }
+                }
+                return ''
+            },
+
+            getFavIcon: function(article) {
+                if(article){
+                    source = this.getSources(article);
+                    return "http://www.google.com/s2/favicons?domain=" + source;
+                }
+                return ''
+            },
+
+            getArticleDate: function(article) {
+                if(article){
+                    let stringDate = article['schema:datePublished']
+                    let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+                    let date = moment(stringDate, "YYYY-MM-DDThh:mm:ssTZD");
+                    let month = date.format('M');
+                    return `${date.format('D')} ${months[month-1]} ${date.format('YYYY')}`
+                }
+                return ''
+            },
+
+            getArticleBody: function(article) {
+                if(article){
+                    return article['schema:articleBody']
+                }
+                return ''
+            },
+        });
+    </script>
+</dom-module>

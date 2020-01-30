@@ -11,7 +11,10 @@
             class="row"
             style$="height: {{height}}px; background-color: #{{bgcolor}};"
         >
-            <div class="col-12 col-md-5 h-100 p-0 image-container">
+            <div
+                on-tap="handleClick"
+                class="col-12 col-md-5 h-100 p-0 image-container"
+            >
                 <div
                     id="main-article-image"
                     class="h-100 w-100 img-blur"
@@ -19,14 +22,17 @@
                 >
                 </div>
                 <div class="overlay">{{getArticleDescription(article)}}</div>
+                
             </div>
             <div class="col-12 col-md-7 h-100">
                 <div class="h-100 content-box">
                     <div>
-                        <div class="article-headline">{{article.schema:headline}}</div>
+                        <div on-tap="handleClick" class="article-headline">{{article.schema:headline}}</div>
                         <div class="center-icon-text mt-2">
                             <img class="icon mr-2 mt-1" src={{getFavIcon(article)}}>
-                            <div class="article-author mt-1">{{article.schema:author}}</div>
+                            <a class="source article-author mt-1" target="_blank" href= https://{{getSources(article)}}>
+                                {{getSources(article)}}
+                            </a>
                         </div>
                         <div class="center-icon-text">
                             <iron-icon icon="date-range" class="icon mr-2"></iron-icon>
@@ -39,7 +45,7 @@
                         <div class="center-icon-text">
                             <iron-icon icon="label" class="icon mr-1"></iron-icon>Etiquetas: 
                         </div>
-                        <button class="see-more-button mr-4" style="vertical-align:middle">
+                        <button on-tap="handleClick" class="see-more-button mr-4">
                             <span>Leer más</span>
                         </button>
                     </div>
@@ -96,6 +102,10 @@
                 //console.log(this.article)
             },
 
+            handleClick: function(e, detail) {
+                this.fire('articleSelected', {article: this.article});
+            },
+
             getArticleImage: function(article) {
                 let defaultImage = this.defaultimage
                 try{
@@ -126,10 +136,10 @@
             },
 
             getArticleDescription: function(article) {
-                let descriptionExcerpt = article['schema:description'].slice(0,50)
-                if(descriptionExcerpt.slice(-1) == "." || descriptionExcerpt.slice(-1) == " " || descriptionExcerpt.slice(-1) == ",")
+                let descriptionExcerpt = article['schema:description'].slice(0,55)
+                if(descriptionExcerpt.slice(-1) in ['.', ' ', ','])
                     descriptionExcerpt = descriptionExcerpt.slice(0, -1)
-                return descriptionExcerpt + " [...]"
+                return descriptionExcerpt + "[...]"
             },
 
             getSources: function(article) {
@@ -161,7 +171,7 @@
                 let bodyExcerpt = article['schema:articleBody'].slice(0,500)
                 if(bodyExcerpt.slice(-1) == "." || bodyExcerpt.slice(-1) ==  " " || bodyExcerpt.slice(-1) ==  ",")
                     bodyExcerpt = bodyExcerpt.slice(0, -1)
-                return bodyExcerpt + " [...]"
+                return bodyExcerpt + "[...]"
             },
         });
     </script>
