@@ -1,0 +1,348 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/elements/article-viewer/article-viewer.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+
+<dom-module id="articles-loader">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="import" type="css" href="articles-loader.css">
+
+    <template>
+    <!--
+        <div class="row mb-md-5">
+            <div class="card-deck">
+                <div class="col-12 col-md-6 d-flex flex-column justify-content-around">
+                    <div
+                        class="card"
+                        on-tap="showViewer"
+                        data-id$="[[article1.id]]"
+                    >
+                        <img
+                            class="card-img-top img-fluid vertical-image"
+                            src="{{getArticleImage(article1)}}"
+                            onerror$="this.src='{{defaultimage}}'"
+                            alt="{{getArticleDescription(article1)}}"
+                        />
+                        <div class="card-body d-flex flex-column justify-content-center py-2">
+                            <div class="d-flex justify-content-start align-items-center mb-2">
+                                <img class="icon-sm mr-2 img-fluid" src={{getFavIcon(article1)}}>
+                                <span class="medium-text">
+                                    {{getSources(article1)}}
+                                </span>
+                            </div>
+                            <p class="card-text primary-headline medium-text">
+                                {{article1.schema:headline}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-md-6 d-flex flex-column justify-content-around">
+                    <div
+                        class="card mb-3"
+                        on-tap="showViewer"
+                        data-id$="[[article2.id]]"
+                    >
+                        <div class="row d-flex no-gutters h-100">
+                            <div class="col-md-5 d-flex">
+                                <img
+                                    class="card-img-top img-fluid horizontal-image"
+                                    src="{{getArticleImage(article2)}}"
+                                    onerror$="this.src='{{defaultimage}}'"
+                                    alt="{{getArticleDescription(article2)}}"
+                                />
+                            </div>
+                            <div class="col-md-7 d-flex flex-column justify-content-center">
+                                <div class="card-body d-flex flex-column justify-content-center p-3">
+                                    <div class="mb-2">
+                                        <img class="icon-sm mr-2 img-fluid" src={{getFavIcon(article2)}}>
+                                        <span class="medium-text">
+                                            {{getSources(article2)}}
+                                        </span>
+                                    </div>
+                                    <p class="card-text secondary-headline medium-text">
+                                        {{article2.schema:headline}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+        
+                    <div
+                        class="card mb-3"
+                        on-tap="showViewer"
+                        data-id$="[[article3.id]]"
+                    >
+                        <div class="row d-flex no-gutters h-100">
+                            <div class="col-md-5 d-flex">
+                                <img
+                                    class="card-img-top img-fluid horizontal-image"
+                                    src="{{getArticleImage(article3)}}"
+                                    onerror$="this.src='{{defaultimage}}'"
+                                    alt="{{getArticleDescription(article3)}}"
+                                />
+                            </div>
+                            <div class="col-md-7 d-flex flex-column justify-content-center">
+                                <div class="card-body d-flex flex-column justify-content-center p-3">
+                                    <div class="mb-2">
+                                        <img class="icon-sm mr-2 img-fluid" src={{getFavIcon(article3)}}>
+                                        <span class="medium-text">
+                                            {{getSources(article3)}}
+                                        </span>
+                                    </div>
+                                    <p class="card-text secondary-headline medium-text">
+                                        {{article3.schema:headline}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    -->
+
+        <!--
+        <template is="dom-repeat" items="{{articles}}" as="article">
+            <template is="dom-if" if="{{openCardDeck(index)}}">
+                <div class="card-deck mb-3">
+            </template>
+
+                <div
+                    class="card"
+                    on-tap="showViewer"
+                    data-id$="[[article.id]]"
+                >
+                    <img
+                        class="card-img-top img-fluid vertical-image"
+                        src$="{{getArticleImage(article)}}"
+                        onerror$="this.src='{{defaultimage}}'"
+                        alt="{{getArticleDescription(article)}}"
+                    />
+                    <div class="card-body py-2">
+                        <div class="card-title">
+                            <div class="d-flex justify-content-start align-items-center mb-2">
+                                <img class="icon-sm mr-2 img-fluid" src={{getFavIcon(article)}}>
+                                <span class="medium-text">
+                                    {{getSources(article)}}
+                                </span>
+                            </div>
+                            <p class="card-text primary-headline medium-text">
+                                {{article.schema:headline}}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            Entidades
+                        </div>
+                    </div>
+                </div>
+
+            <template is="dom-if" if="{{closeCardDeck(index)}}">
+                </div>
+            </template>
+        </template>
+        -->
+        
+        <div class="row">
+            <div class="card-deck">
+                <template is="dom-repeat" items="{{showing}}" as="article">
+                    <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-md-5">
+                        <div
+                            class="card"
+                            on-tap="showViewer"
+                            data-id$="[[article.id]]"
+                        >
+                            <img
+                                class="card-img-top img-fluid vertical-image"
+                                src$="{{getArticleImage(article)}}"
+                                onerror$="this.src='{{defaultimage}}'"
+                                alt="{{getArticleDescription(article)}}"
+                            />
+                            <div class="card-body py-2">
+                                <div class="card-title">
+                                    <div class="d-flex justify-content-start align-items-center mb-2">
+                                        <img class="icon-sm mr-2 img-fluid" src={{getFavIcon(article)}}>
+                                        <span class="medium-text">
+                                            {{getSources(article)}}
+                                        </span>
+                                    </div>
+                                    <p class="card-text primary-headline medium-text">
+                                        {{article.schema:headline}}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <span class="medium-text">Entidades:</span>
+                                    <span class="badge ml-2 p-1" style$="background-color: #{{maincolor}};">{{getEntityCount(article)}}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <span class="medium-text">Categorías:</span>
+                                    <span class="ml-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-center">
+            <div
+                class="circle plus"
+                id="loadmore"
+                style$="background-color: #{{maincolor}};"
+                on-tap="addArticles"
+            ></div>
+        </div>
+
+        <article-viewer
+            data=""
+            maincolor="{{maincolor}}"
+            defaultimage="{{defaultimage}}">
+        </article-viewer>
+
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'articles-loader',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                maincolor: {
+                    type: String,
+                    value: '7250ff'
+                },
+
+                articles: {
+                    type: Array,
+                    value: [],
+                },
+
+                showing: {
+                    type: Array,
+                    value: []
+                },
+
+                index: {
+                    type: Number,
+                    value: 0
+                },
+
+                defaultimage: {
+                    type: String,
+                    value: '/elements/articles-loader/assets/img/defaultImage.jpg'
+                },
+
+                fields: {
+                  type: Array,
+                  value: function() { return []; }
+                },
+
+                filters: {
+                  type: Array,
+                  notify: true,
+                  value: function() { return []; }
+                }
+            },
+
+            _dataChanged: function() {
+                var hits = this.data.hits.hits;
+                var results = []
+                 
+                hits.forEach(function(article) {
+                    results.push(article._source);
+                });
+
+                //results.slice(3)
+                this.articles = results;
+                this.showing = results.slice(0,9);
+                this.index = 9;
+            },
+
+            addArticles: function(e, detail) {
+                let from = this.index;
+                let to = Math.min(from+9, this.articles.length);
+
+                that = this;
+                this.articles.slice(from, to).forEach(function(article){
+                    that.push('showing', article);
+                });
+
+                if(to === this.articles.length)
+                    document.getElementById('loadmore').style.display = "none";
+                this.index = to;
+            },
+
+            showViewer: function(e, detail) {
+                let id = e.target.closest('.card').dataset.id;
+                let clicked;
+
+                for(let article of this.articles){
+                    if(article['id'] === id){
+                        clicked = article;
+                        break;
+                    }
+                }
+
+                Polymer.dom(this.root).querySelector('article-viewer').data = clicked;
+                Polymer.dom(this.root).querySelector('article-viewer').display = true;
+                document.body.style.overflow = "hidden";
+            },
+
+            getEntityCount: function(article){
+                if('entities' in article)
+                    return article.entities.length;
+                return 0;
+            },
+
+            getArticleImage: function(article) {
+                if('schema:thumbnailUrl' in article)
+                    return article['schema:thumbnailUrl'];
+                return '';
+            },
+
+            getArticleDescription: function(article) {
+                if('schema:description' in article)
+                    return article['schema:description'].replace(/\.\.\.|…/g, '[...]');
+                return '';
+            },
+
+            getSources: function(article) {
+                source = article.id;
+                let match = source.match(/:\/\/([0-9]?\.)?(.[^/:]+)/i);
+                if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+                  return match[2];
+                }
+                return null
+            },
+
+            getFavIcon: function(article) {
+                source = this.getSources(article);
+                return "http://www.google.com/s2/favicons?domain=" + source;
+            },
+
+            getArticleDate: function(article) {
+                let stringDate = article['schema:datePublished']
+                let months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+                let date = moment(stringDate, "YYYY-MM-DDThh:mm:ssTZD");
+                let month = date.format('M');
+                return `${date.format('D')} ${months[month-1]} ${date.format('YYYY')}`
+            },
+
+            getArticleBody: function(article) {
+                let body = article['schema:articleBody']
+                return body.replace(/\n/g, '\n\n')
+            },
+        });
+    </script>
+</dom-module>

@@ -1,6 +1,10 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
+</script>
 
 <dom-module id="article-viewer">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -11,7 +15,7 @@
             --my-elem-right: -9999px !important;
         }
 
-        #article-container {
+        #viewer-container {
             position: fixed;
             top: 0;
             right: var(--my-elem-right);
@@ -25,7 +29,7 @@
     </style>
 
     <template>
-        <div id="article-container">
+        <div id="viewer-container">
             <div class="container-fluid">
                 <div class="row">
                     <div
@@ -44,14 +48,29 @@
             </div>
 
             <div class="container d-flex flex-column align-items-center my-5">
-                <div class="col-12 col-md-10">
-                    <div class="row mt-4">
+                <div  class="col-12 col-md-10">
+                    <div class="row mt-4 mb-2">
                         <div class="col-12">
                             <div class="article-headline medium-text">{{article.schema:headline}}</div>
                         </div>
                     </div>
 
-                    <div class="row my-2">
+                    <div class="row mt-1">
+                        <div class="col-12">
+                            <div class="image-container">
+                                <img
+                                    id="viewer-image"
+                                    class="article-image img-blur mb-2"
+                                    src={{getArticleImage(article)}}
+                                    onerror$="this.src='{{defaultimage}}'"
+                                    alt="{{getArticleDescription(article)}}"
+                                />
+                                <div class="overlay light-text">{{getArticleDescription(article)}}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
                         <div class="col-12 col-md-6 d-flex justify-content-start align-items-center">
                             <img class="icon-sm mr-2 " src={{getFavIcon(article)}}>
                             <a class="medium-text article-author" target="_blank" href$="https://{{getSources(article)}}">
@@ -64,24 +83,39 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-12">
-                            <div class="image-container">
-                                <img
-                                    class="article-image img-blur mb-2"
-                                    src={{data.schema:thumbnailUrl}}
-                                    onerror$="this.src={{defaultimage}}"
-                                />
-                                <div class="overlay light-text">{{getArticleDescription(article)}}</div>
+                            <div class="article-headline medium-text mb-1">Entidades:</div>
+
+                            <div class="d-flex align-items-center medium-text">
+                                <div class="square place" style="margin-left: 0px;"></div>Lugar
+                                <div class="square organization"></div>Organización
+                                <div class="square person"></div>Persona
                             </div>
+
+                            <template is="dom-repeat" items="{{article.entities}}" as="entity">
+                                <span
+                                    class="badge badge-secondary p-1"
+                                    on-tap="highlightEntity"
+                                    style$="background-color: {{getEntityBackground(entity)}};"
+                                >
+                                    {{entity.schema:name}}
+                                </span>
+                            </template>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-12">
-                            <div class="article-body light-text">
-                                {{getArticleBody(article)}}
+                            <div class="article-headline medium-text mb-1">Artículo:</div>
+
+                            <div role="tabpanel" id="panel">
+                                <div
+                                    id="article-body"
+                                    class="article-body light-text"
+                                ></div>
                             </div>
+                            
                         </div>
                     </div>
 
@@ -117,7 +151,7 @@
 
                 maincolor: {
                     type: String,
-                    value: '107b10'
+                    value: '7250ff'
                 },
 
                 fields: {
@@ -138,55 +172,83 @@
 
             _visibilityChanged: function() {
                 if(this.display){
+                    document.getElementById("article-body").innerHTML = this.article['schema:articleBody']
                     this.customStyle['--my-elem-right'] = '0px';
                     this.updateStyles();
-                }else {
-                    let hideValue = Math.max(screen.width, screen.height);
-                    this.customStyle['--my-elem-right'] = -(hideValue + 10) + 'px';
+                }else{
+                    this.customStyle['--my-elem-right'] = -(screen.width + screen.height) + 'px';
                     this.updateStyles();
                 }
             },       
 
             hideArticle: function() {
-               this.display = false;
-               document.body.style.overflow = "scroll";
-               document.body.style.overflowX = "hidden";
+                document.getElementById("viewer-container").scrollBy({top: 0, left: 0});
+                this.display = false;
+                
+                document.body.style.overflow = "scroll";
+                document.body.style.overflowX = "hidden";
+            },
+
+            getEntityBackground: function(entity){
+                if(entity["@type"][0] === "schema:Place")
+                    color = "#ff9900"
+                else if(entity["@type"][0] === "schema:Organization")
+                    color = "#dd4b39"
+                else
+                    color = "#00c0ef"
+
+                return color;
+            },
+
+            highlightEntity: function(e) {
+                var element = document.getElementById("article-body")
+                var text = this.article['schema:articleBody']
+                var text_highlighted=""
+                var beginIndex = e.model.__data__.entity["nif:beginIndex"]
+                var endIndex = e.model.__data__.entity["nif:endIndex"]
+                var cnt=0
+
+                if (beginIndex[0] >= 0) {
+                    if(text[beginIndex[0]]===' ')
+                        cnt+=1
+                    text_highlighted = text.substring(0,beginIndex[0]+cnt) + "<span id='locator' style='background-color:yellow'>" + text.substring(beginIndex[0]+cnt,endIndex[0]+1+cnt) + "</span>"
+                    for(var i =1 ; i<beginIndex.length;i++){
+                        if(text[beginIndex[i]+cnt]===' ')
+                            cnt+=1
+                        text_highlighted+=text.substring(endIndex[i-1]+1+cnt,beginIndex[i]+cnt)
+                        text_highlighted+="<span style='background-color:yellow'>"
+                        text_highlighted+=text.substring(beginIndex[i]+cnt,endIndex[i]+1+cnt)
+                        text_highlighted+="</span>"
+                    }
+                    text_highlighted+= text.substring(endIndex[endIndex.length-1]+1+cnt)
+                    element.innerHTML = text_highlighted
+
+                    //Dynamic Scroll
+                    let elmnt = document.getElementById("locator");
+                    let wrapper = document.getElementById("viewer-container");
+                    let count = elmnt.offsetTop - wrapper.scrollTop + 200;
+                    wrapper.scrollBy({top: count, left: 0, behavior: 'smooth'});                    
+                }
+                
             },
 
             getArticleImage: function(article) {
-                let defaultImage = this.defaultimage;
-                try{
-                    let image = article['schema:thumbnailUrl']
+                if(article)
+                    return article['schema:thumbnailUrl'];
+                return '';
+            },
 
-                    // Check thumbnail existence
-                    if(image == "null"){
-                        return defaultImage
-                    }
-
-                    // Check thumbnail url and size
-                    let img = new Image()
-                    img.src = image
-                    img.onerror = function(){
-                        document.getElementById('main-article-image').style.backgroundImage = "url("+defaultImage+")"
-                        //alert("Enlace roto")
-                    }
-                    img.onload = function(){
-                        if(this.width < 250 || this.height < 250){
-                            document.getElementById('main-article-image').style.backgroundImage = "url("+defaultImage+")"
-                            //alert(this.width + " " + this.height)
-                        }
-                    }
-                    return image
-                }catch(error){
-                    return defaultImage
-                }
+            getArticleId: function(article) {
+                if(article)
+                    return article['id'];
+                return '';
             },
 
             getArticleDescription: function(article) {
                 if(article){
                     return article['schema:description'].replace(/\.\.\.|…/g, '[...]')
                 }
-                return null
+                return ''
             },
 
             getSources: function(article) {
@@ -197,7 +259,7 @@
                       return match[2];
                     }
                 }
-                return null
+                return ''
             },
 
             getFavIcon: function(article) {
@@ -205,7 +267,7 @@
                     source = this.getSources(article);
                     return "http://www.google.com/s2/favicons?domain=" + source;
                 }
-                return null
+                return ''
             },
 
             getArticleDate: function(article) {
@@ -217,15 +279,14 @@
                     let month = date.format('M');
                     return `${date.format('D')} ${months[month-1]} ${date.format('YYYY')}`
                 }
-                return null
+                return ''
             },
 
             getArticleBody: function(article) {
                 if(article){
-                    let body = article['schema:articleBody']
-                    return body.replace(/\n/g, '\n\n')
+                    return article['schema:articleBody']
                 }
-                return null
+                return ''
             },
         });
     </script>

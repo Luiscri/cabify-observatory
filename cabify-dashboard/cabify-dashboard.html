@@ -1,13 +1,13 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="/bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="/elements/happymap/happymap-element.html">
 <link rel="import" href="/elements/material-search/material-search.html">
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/podium-chart/podium-chart.html">
-<link rel="import" href="/elements/main-article-frame/main-article-frame.html">
-<link rel="import" href="/elements/news-loader/news-loader.html">
-<link rel="import" href="/elements/article-viewer/article-viewer.html">
+<link rel="import" href="/elements/articles-loader/articles-loader.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 
@@ -21,45 +21,39 @@
     <link rel="import" type="css" href="styles/cabify-dashboard.css">
 
     <template>
-        <div class="centerBoth my-3 w-100">
+        <div class="centerBoth mt-5 w-100">
             <div class="top">
-                <img src="img/logoCatedra.png" style="height: 150px; width: auto;">
+                <img src="img/logoObservatorio.png" style="width: 70%; height: auto;">
             </div>
         </div>
 
-        <iron-pages selected="0" style="padding: 0px !important;">
-            <div>
-                <main-article-frame
-                    data="{{articlesData}}"
-                    defaultimage="elements/main-article-frame/assets/img/defaultImage.jpg"
-                    height="500">
-                </main-article-frame>
+        <div class="container my-5">
 
-                <div class="container my-5">
-                    <material-search
-                        active=True
-                        search-value="{{query}}"
-                        filters="{{filters}}">        
-                    </material-search>
+            <paper-tabs selected="{{selected}}">
+                <paper-tab>Noticias</paper-tab>
+                <paper-tab>Estadísticas</paper-tab>
+            </paper-tabs>
 
-                    <div class="mt-5">
-                        <news-loader
-                            data="{{articlesData}}"
-                            defaultimage="./elements/main-article-frame/assets/img/defaultImage.jpg">
-                        </news-loader>
-                    </div>
+            <material-search
+                active=True
+                search-value="{{query}}"
+                filters="{{filters}}">        
+            </material-search>
+
+            <iron-pages selected={{selected}}>
+                <div class="mt-5">
+                    <articles-loader
+                        data="{{articlesData}}"
+                        filters="{{filters}}"
+                    >
+                    </articles-loader>
                 </div>
 
-                <article-viewer
-                    data=""
-                    defaultimage="./elements/main-article-frame/assets/img/defaultImage.jpg">
-                </article-viewer>
-            </div>
-
-            <div>
-            
-            </div>
-        </iron-pages>     
+                <div>
+                
+                </div>
+            </iron-pages>
+        </div>   
 
         <div class="footer">
             <img class="gsi_logo" src="img/gsi_blanco.svg">
@@ -115,6 +109,7 @@
             },
 
             ready: function(){
+                /*
                 let that = this;
                 let ironPages = Polymer.dom(that.root).querySelector('iron-pages');
 
@@ -126,14 +121,9 @@
                         document.body.style.overflow = "hidden";
                     });
                 });
-
-                //ironPages.selectIndex(1);
+                */
 
                 console.log("Ready");
-            },
-
-            sleep: function(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
             },
 
             _clientChanged: function() {
@@ -177,7 +167,25 @@
                                 }
                             },
                             aggs: {
-
+                                'entities.name': {
+                                    terms: {
+                                        field: "entities.schema:name.keyword",
+                                        size : 50,
+                                        order: {
+                                            _count: "desc"
+                                        }
+                                    },
+                                    aggs: {
+                                        'entity_type': {
+                                            "top_hits": {
+                                                "_source": {
+                                                    "includes": ["entities.@type","entities.schema:name"]
+                                                },
+                                                "size" : 1
+                                            }
+                                        }
+                                    }
+                                },
                             }      
                         }
                     }).then(function(resp) {
