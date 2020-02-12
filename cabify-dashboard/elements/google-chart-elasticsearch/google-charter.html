@@ -32,10 +32,9 @@ Data can be provided in one of three ways:
 @demo
 -->
 <dom-module id="google-charter">
-  <style is="custom-style">
-  @import url("../../styles/app-theme.html");
-</style>
+
 <link rel="import" type="css" href="google-chart.css">
+
 <template>
   <paper-material elevation="1">
     <div class="top-bar">
@@ -236,7 +235,7 @@ Data can be provided in one of three ways:
         type: Array,
         notify: true,
         value: function() { return []; }
-      }, 
+      },
       isSelected: {
         type: Boolean,
         value: false
@@ -252,7 +251,7 @@ Data can be provided in one of three ways:
       }
     },
     observers: [
-      '_loadData(rows, cols, data)',  
+      '_loadData(rows, cols, data)',
       '_filtersChange(filters.*)'
     ],
     _packages: null,
@@ -484,7 +483,7 @@ Data can be provided in one of three ways:
               return -1;
             else if (a.time > b.time)
               return 1;
-            else 
+            else
               return 0;
           }
 
@@ -518,10 +517,10 @@ Data can be provided in one of three ways:
               });
             results.forEach(function(datum, index) {
               json.forEach(function(entry) {
-                if(entry.date.$date == datum.time) {  
+                if(entry.date.$date == datum.time) {
                   if(entry.paradigma == undefined)
                     sentiment = entry.viralheat.pos - entry.viralheat.neg
-                  else  
+                  else
                     sentiment = entry.paradigma.pos - entry.paradigma.neg
                   datum["value"] = entry.price
                   currprice = entry.price
@@ -596,7 +595,7 @@ Data can be provided in one of three ways:
               return -1;
             else if (a.time > b.time)
               return 1;
-            else 
+            else
               return 0;
           }
 
@@ -630,10 +629,10 @@ Data can be provided in one of three ways:
               });
             results.forEach(function(datum, index) {
               json.forEach(function(entry) {
-                if(entry.date.$date == datum.time) {    
+                if(entry.date.$date == datum.time) {
                    if(entry.paradigma == undefined)
                     sentiment = entry.viralheat.pos - entry.viralheat.neg
-                  else  
+                  else
                     sentiment = entry.paradigma.pos - entry.paradigma.neg
                   datum["value"] = entry.price
                   currprice = entry.price
@@ -677,11 +676,11 @@ Data can be provided in one of three ways:
           body: {
             size: 10000,
             query: {
-             
+
                   bool: {
                     must: this.filters,
                   }
-               
+
             }
           }
           }).then(function (resp) {
@@ -724,7 +723,7 @@ Data can be provided in one of three ways:
                 return -1;
               else if (a.time > b.time)
                 return 1;
-              else 
+              else
                 return 0;
             }
 
@@ -758,10 +757,10 @@ Data can be provided in one of three ways:
                 });
               results.forEach(function(datum, index) {
               json.forEach(function(entry) {
-                if(entry.date.$date == datum.time) {    
+                if(entry.date.$date == datum.time) {
                    if(entry.paradigma == undefined)
                     sentiment = entry.viralheat.pos - entry.viralheat.neg
-                  else  
+                  else
                     sentiment = entry.paradigma.pos - entry.paradigma.neg
                   datum["value"] = entry.price
                   currprice = entry.price

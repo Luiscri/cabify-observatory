@@ -23,7 +23,7 @@
     <template>
         <div class="centerBoth mt-5 w-100">
             <div class="top">
-                <img src="img/logoObservatorio.png" style="width: 70%; height: auto;">
+                <img src="img/logoObservatorioAzul.png" style="width: 70%; height: auto;">
             </div>
         </div>
 
@@ -50,7 +50,54 @@
                 </div>
 
                 <div>
-                
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-6">
+                            <number-chart
+                                data="{{articlesData}}"
+                                aggkey="schema:author"
+                                title="Noticias seleccionadas"
+                                subtitle="Noticias totales"
+                                total="[[articlesData.hits.total]]"
+                                stylebg="bg-green"
+                                icon="elements/number-chart/img/noticia485.png">
+                            </number-chart>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6">
+                            <google-chart
+                                field="schema:author"
+                                data="{{articlesData}}"
+                                type="pie"
+                                id="pie-chart"
+                                extra-id="pie-chart"
+                                filters="{{filters}}"
+                                sources="{{sources}}"
+                                options='{"title": "Noticias"}'
+                                optionsbi='{"is3D": "true"}'>
+                            </google-chart>
+                            <!--Google chart pie hay muchas opciones interesantes como fontname y demas:
+                            https://developers.google.com/chart/interactive/docs/gallery/piechart-->  
+                        </div>
+                    </div>
+
+                    <div class= "row">
+                        <div class="col-12">
+                            <google-chart
+                                field="schema:datePublished"
+                                data="{{articlesData}}"
+                                type="line"
+                                id="line-chart"
+                                extra-id="line-chart"
+                                filters="{{filters}}"
+                                sources="{{sources}}"
+                                icon="icons:trending-up"
+                                options='{"title": "Distribución en el tiempo de las noticias"}'
+                                optionsbi='{"legend": {"position": "bottom"}}'>
+                            </google-chart>
+                        </div>
+                    </div>
                 </div>
             </iron-pages>
         </div>   
@@ -166,7 +213,24 @@
                                     must: this.filters,
                                 }
                             },
+
                             aggs: {
+                                type: {
+                                    terms: {
+                                        field: "@type.keyword",
+                                        order: {
+                                            _count: "desc"
+                                        }
+                                    }
+                                },
+                                'schema:author': {
+                                    terms: {
+                                        field: "schema:author.keyword",
+                                        order: {
+                                            _count: "desc"
+                                        }
+                                    }
+                                },
                                 'entities.name': {
                                     terms: {
                                         field: "entities.schema:name.keyword",
@@ -186,6 +250,42 @@
                                         }
                                     }
                                 },
+                                'categories.name': {
+                                    terms: {
+                                        field: "taxonomies.rdfs:label.keyword",
+                                        size: 50,
+                                        order: {
+                                            _count:"desc"
+                                        }
+                                    },
+                                    aggs: {
+                                        'category_type': {
+                                            "top_hits": {
+                                                "_source": {
+                                                    "includes": ["taxonomies.@type","taxonomies.rdfs:label"]
+                                                },
+                                                "size" : 1
+                                            }
+                                        }
+                                    }
+                                },
+                                'schema:datePublished': {
+                                    date_histogram: {
+                                        field: "schema:datePublished",
+                                        format: "MM-yyyy-dd",
+                                        interval: "day"
+                                    },
+                                    aggs:{
+                                        source:{
+                                            terms: {
+                                                field: "schema:author.keyword",
+                                                order: {
+                                                    _count: "desc"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }      
                         }
                     }).then(function(resp) {

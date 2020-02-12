@@ -173,14 +173,14 @@
                             </div>
                             <div class="card-footer">
                                 <div class="d-flex justify-content-start align-items-center">
-                                    <span class="medium-text">Entidades:</span>
-                                    <span class="badge ml-2 p-1" style$="background-color: #{{maincolor}};">{{getEntityCount(article)}}</span>
+                                    <span class="medium-text">Categorías:</span>
+                                    <span class="badge ml-2 p-1" style$="background-color: #{{maincolor}};">{{getCategoryCount(article)}}</span>
                                 </div>
                             </div>
                             <div class="card-footer">
                                 <div class="d-flex justify-content-start align-items-center">
-                                    <span class="medium-text">Categorías:</span>
-                                    <span class="ml-2"></span>
+                                    <span class="medium-text">Entidades:</span>
+                                    <span class="badge ml-2 p-1" style$="background-color: #{{maincolor}};">{{getEntityCount(article)}}</span>
                                 </div>
                             </div>
                         </div>
@@ -219,7 +219,7 @@
 
                 maincolor: {
                     type: String,
-                    value: '7250ff'
+                    value: '354169'
                 },
 
                 articles: {
@@ -262,10 +262,10 @@
                     results.push(article._source);
                 });
 
-                //results.slice(3)
                 this.articles = results;
-                this.showing = results.slice(0,9);
-                this.index = 9;
+                this.index = Math.min(9, results.length);
+                this.showing = results.slice(0, this.index);
+                
             },
 
             addArticles: function(e, detail) {
@@ -301,6 +301,12 @@
             getEntityCount: function(article){
                 if('entities' in article)
                     return article.entities.length;
+                return 0;
+            },
+
+            getCategoryCount: function(article){
+                if('taxonomies' in article)
+                    return article.taxonomies.length;
                 return 0;
             },
 

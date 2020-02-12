@@ -85,23 +85,34 @@
 
                     <div class="row mb-3">
                         <div class="col-12">
-                            <div class="article-headline medium-text mb-1">Entidades:</div>
 
                             <div class="d-flex align-items-center medium-text">
                                 <div class="square place" style="margin-left: 0px;"></div>Lugar
                                 <div class="square organization"></div>Organización
                                 <div class="square person"></div>Persona
+                                <div class="square category"></div>Categoría
                             </div>
 
                             <template is="dom-repeat" items="{{article.entities}}" as="entity">
                                 <span
                                     class="badge badge-secondary p-1"
-                                    on-tap="highlightEntity"
-                                    style$="background-color: {{getEntityBackground(entity)}};"
+                                    on-tap="highlightExcerpt"
+                                    style$="background-color: {{getBadgeBackground(entity)}};"
                                 >
                                     {{entity.schema:name}}
                                 </span>
                             </template>
+
+                            <template is="dom-repeat" items="{{article.taxonomies}}" as="entity">
+                                <span
+                                    class="badge badge-secondary p-1"
+                                    on-tap="highlightExcerpt"
+                                    style$="background-color: {{getBadgeBackground(entity)}};"
+                                >
+                                    {{getCategoryName(entity)}}
+                                </span>
+                            </template>
+
                         </div>
                     </div>
 
@@ -189,18 +200,25 @@
                 document.body.style.overflowX = "hidden";
             },
 
-            getEntityBackground: function(entity){
-                if(entity["@type"][0] === "schema:Place")
+            getBadgeBackground: function(item){
+                if(item["@type"][0] === "schema:Place")
                     color = "#ff9900"
-                else if(entity["@type"][0] === "schema:Organization")
+                else if(item["@type"][0] === "schema:Organization")
                     color = "#dd4b39"
-                else
+                else if(item["@type"][0] === "schema:Person")
                     color = "#00c0ef"
+                else
+                    color = "#5f5755"
 
                 return color;
             },
 
-            highlightEntity: function(e) {
+            getCategoryName: function(taxonomy){
+                var tag = taxonomy['rdfs:label']
+                return tag.substr(tag.lastIndexOf("/")+1);
+            },
+
+            highlightExcerpt: function(e) {
                 var element = document.getElementById("article-body")
                 var text = this.article['schema:articleBody']
                 var text_highlighted=""

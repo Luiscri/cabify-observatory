@@ -175,6 +175,10 @@
     background-color: #00c0ef;
 }
 
+.category {
+    background-color: #5f5755;
+}
+
 .article-headline {
     font-size: 35px;
     line-height: 35px;

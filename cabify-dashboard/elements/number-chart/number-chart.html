@@ -21,7 +21,7 @@
             <div class="progress">
               <div class="progress-bar progress-bar-name" id="barprogress" style="width: 50%"></div>
             </div>
-            <span class="progress-description">{{ subtitle }}: {{ total }}</span>
+            <span class="progress-description" id="totalNews"></span>
           </div>
         </div>
       </div>
@@ -93,7 +93,9 @@
                 console.log("No data");
                 return;
               }
-              numberMax = this.data.hits.total;
+              
+              numberMax = numberMax == 0 ? this.total : numberMax
+
               var idNum = this.$.number;
               var idBar = this.$.barprogress;
               var object = this.object;
@@ -112,14 +114,18 @@
                 idNum.innerHTML = this.kFormatter(selected);
                 progress = 100*selected/numberMax;
                 idBar.style.width = progress+"%";
-                this.total = this.kFormatter(numberMax);
+                this.total = this.kFormatter(this.total);
               }
               else{
                 //console.log(this.data.hits)
                 var num = this.data.hits.total > 999 ? (this.data.hits.total/1000).toFixed(1) + 'k' : this.data.hits.total;
                 idNum.innerHTML = num;
-		            this.total = num;
-                idBar.style.width = "100%";
+                totalNews.innerHTML = this.subtitle + ': ' + this.kFormatter(numberMax)
+                //console.log(numberMax)
+		            //this.total = this.kFormatter(this.total);
+                progress = 100*num/numberMax;
+                console.log(progress)
+                idBar.style.width = progress+"%";
               }
             }
 
