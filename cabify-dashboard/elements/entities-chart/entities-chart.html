@@ -1,0 +1,220 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+
+<dom-module id="entities-chart">
+
+<link rel="import" type="css" href="entities-chart.css">
+
+  <template>
+    <!-- Shadow DOM -->
+    <paper-material class="entities" elevation="1" style="min-height: 325px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="top-bar">
+        <iron-icon icon="{{icon}}"></iron-icon>
+        <span>{{title}}</span>
+      </div>
+      <div id="nodata" style="margin-top: 60px">No entries match the current filters</div>
+      <div class="content" style="text-align:center; margin: 0 auto; min-height: 46px;">
+        <div id="legend_list">
+          <template is="dom-repeat" items="{{legend}}" as="element">
+            <div class="legend_component">
+              <div class="legend_square" style$="background-color:{{element.color}};"></div>
+              {{element.name}}
+            </div>
+          </template>
+        </div>
+      </div>
+      <div id="tagwrapper" style="min-height: 215px; padding-left: 7px; overflow-x: auto;">
+
+        <template is="dom-repeat" items="{{entities}}" as="entity">
+
+          <span class="badge badge-secondary" on-tap="filter" style$="background-color: {{getBgColour(entity.2)}}7d; color:#505050; border-color:{{getBgColour(entity.2)}}" data-color$="{{getBgColour(entity.2)}}">{{getEntity(entity.0)}}<span class="number" style$="background-color:{{getBgColour(entity.2)}}">{{entity.1}}</span></span>
+
+        </template>
+      </div>
+      <div style="float: right; bottom: 10px; width: 100%; display: flex; flex-direction: row; justify-content: flex-end; align-content: center;">
+        <small style="align-self: center;">Clear Filters</small>
+        <paper-icon-button icon="delete" alt="menu" class="green" on-tap="removeFilters"></paper-icon-button>
+      </div>
+      <div style="width:100%; clear: both"></div>
+    </paper-material>
+
+  </template>
+
+  <script>
+    var filtered = false;
+
+    Polymer({
+
+      is: 'entities-chart',
+
+      properties: {
+
+        data: {
+          type: Object,
+          observer: '_dataChanged'
+        },
+
+        icon: {
+          type: String
+        },
+        entities: {
+          type: Array
+        },
+
+        title: {
+          type: String,
+          value: "Entities Chart"
+        },
+        legend: {
+          type: Array,
+        },
+        color: {
+          type: String
+        },
+        query: {
+          type: String,
+          observer: '_queryChanged'
+        },
+
+        index: {
+          type: String
+        },
+
+        subindex: {
+          type: String
+        },
+
+        fields: {
+          type: Array,
+          value: function() { return []; }
+        },
+
+        field: {
+          type: String
+        },
+
+        host: {
+          type: String
+        },
+
+        param: {
+          type: String,
+          notify: true
+        },
+
+        filters: {
+          type: Array,
+          notify: true,
+          value: function() { return []; }
+        }
+      },
+
+      ready: function(){
+
+      },
+      _dataChanged: function() {
+        var that = this
+        var aggs = 0
+        // console.log(this.field)
+        try{
+          var hits = this.data.aggregations[this.field].buckets;
+        }
+        catch(err){
+          var hits = []
+        }
+        // console.log(hits)
+        var data = [];
+        switch(this.field){
+          case "entities.name":
+            hits.forEach(function(entry) {
+              entry.entity_type.hits.hits[0]._source.entities.forEach(function(entity){
+                if(entry.key===entity['schema:name']){
+                  data.push([entry.key, entry.doc_count,entity['@type'][0]]);
+                }
+              });
+            });
+            break;
+          case "categories.name":
+            hits.forEach(function(entry){
+              data.push([entry.key,entry.doc_count])
+            })
+            break;
+        }
+
+
+        if(data.length == 0 ){
+          this.$.tagwrapper.style.visibility = 'hidden';
+          this.$.nodata.style.visibility = 'visible';
+        } else {
+            this.$.tagwrapper.style.visibility = 'visible';
+            this.$.nodata.style.visibility = 'hidden';
+        }
+        that.entities = data;
+        filtered = true;
+      },
+      getEntity: function(entity) {
+        switch(this.field){
+          case "entities.name":
+            return entity;
+          case "categories.name":
+            arr_category=entity.split("/")
+            name=arr_category[arr_category.length -1]
+            if(name.length<50){
+              return name
+            }
+            return name.substring(0,50)+"..."
+        }
+      },
+      getBgColour: function(type){
+
+        var legend_elements = this.legend
+        if(legend_elements){
+          legend_elements.forEach(function(entry){
+            if(entry["type"]===type){
+              color=entry["color"]
+            }
+          })
+        }else { // There are other parameter to select just a color
+          if(this.color){
+            color = this.color
+          }else{ //Default background color
+            color = "#000000"
+          }
+        }
+
+
+        $(".entities .badge.badge-secondary").mouseover(function(){
+          $(this).css("background-color", $(this).attr('data-color'));
+        });
+        $(".entities .badge.badge-secondary").mouseleave(function(){
+          $(this).css("background-color", $(this).attr('data-color') + '7d');
+        });
+        return color;
+      },
+      removeFilters: function(){
+        this.filters = [];
+      },
+
+      filter: function(e) {
+        var myfilters = [e.model.__data__.entity[0]]
+        var field =""
+        switch(this.field){
+          case "entities.name":
+            field = "entities.schema:name.keyword"
+            break;
+          case "categories.name":
+            field = "taxonomies.rdfs:label.keyword"
+            break;
+          default:
+            break;
+        }
+        var terms = {}
+        terms[field]=myfilters
+        this.push('filters', { terms: terms})
+      }
+
+    });
+  </script>
+
+</dom-module>

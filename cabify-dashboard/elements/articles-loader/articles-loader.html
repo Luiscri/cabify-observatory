@@ -146,7 +146,7 @@
         <div class="row">
             <div class="card-deck">
                 <template is="dom-repeat" items="{{showing}}" as="article">
-                    <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-md-5">
+                    <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-4 mb-md-5">
                         <div
                             class="card"
                             on-tap="showViewer"
@@ -243,14 +243,14 @@
                 },
 
                 fields: {
-                  type: Array,
-                  value: function() { return []; }
+                    type: Array,
+                    value: function() { return []; }
                 },
 
                 filters: {
-                  type: Array,
-                  notify: true,
-                  value: function() { return []; }
+                    type: Array,
+                    notify: true,
+                    value: function() { return []; },
                 }
             },
 
@@ -264,8 +264,7 @@
 
                 this.articles = results;
                 this.index = Math.min(9, results.length);
-                this.showing = results.slice(0, this.index);
-                
+                this.showing = results.slice(0, this.index);   
             },
 
             addArticles: function(e, detail) {

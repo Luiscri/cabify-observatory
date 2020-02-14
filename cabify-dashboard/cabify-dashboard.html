@@ -3,13 +3,15 @@
 <link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="/bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="/elements/happymap/happymap-element.html">
+<link rel="import" href="/elements/simple-heatmap/simple-heatmap.html">
 <link rel="import" href="/elements/material-search/material-search.html">
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
-<link rel="import" href="/elements/podium-chart/podium-chart.html">
 <link rel="import" href="/elements/articles-loader/articles-loader.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/elements/spider-chart/spider-chart.html">
+<link rel="import" href="/elements/entities-chart/entities-chart.html">
 
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -31,7 +33,7 @@
 
             <paper-tabs selected="{{selected}}">
                 <paper-tab>Noticias</paper-tab>
-                <paper-tab>Estadísticas</paper-tab>
+                <paper-tab id="statistics">Estadísticas</paper-tab>
             </paper-tabs>
 
             <material-search
@@ -61,11 +63,6 @@
                                 stylebg="bg-green"
                                 icon="elements/number-chart/img/noticia485.png">
                             </number-chart>
-                        </div>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-12 col-md-6">
                             <google-chart
                                 field="schema:author"
                                 data="{{articlesData}}"
@@ -74,11 +71,23 @@
                                 extra-id="pie-chart"
                                 filters="{{filters}}"
                                 sources="{{sources}}"
+                                icon="icons:donut-small"
                                 options='{"title": "Noticias"}'
                                 optionsbi='{"is3D": "true"}'>
                             </google-chart>
-                            <!--Google chart pie hay muchas opciones interesantes como fontname y demas:
-                            https://developers.google.com/chart/interactive/docs/gallery/piechart-->  
+                        </div>
+
+                        <div class="col-md-6 col-xs-12 col-lg-6">
+                            <!--
+                            <spider-chart
+                                datos="{{articlesData}}"
+                                entity="categories.name"
+                                icon="icons:assessment"
+                                field="taxonomies"
+                                filters="{{filters}}"
+                                title="Categorías">
+                            </spider-chart>
+                            -->
                         </div>
                     </div>
 
@@ -98,6 +107,36 @@
                             </google-chart>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-12 col-md-6 mt-1">
+                            <entities-chart
+                                field="entities.name"
+                                data="{{articlesData}}"
+                                title="Entidades"
+                                icon="icons:list"
+                                param="{{param}}"
+                                id="entitieschart"
+                                filters="{{filters}}"
+                                legend='[{"name":"Organización","type":"schema:Organization","color":"#dd4b39"},
+                                         {"name":"Lugar","type":"schema:Place","color":"#ff9900"},
+                                         {"name": "Persona","type":"schema:Person","color":"#00c0ef"}]'>
+                            </entities-chart>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="top_bar_happy_map">
+                                <iron-icon icon="maps:place" class="style-scope dashboard-somedi x-scope iron-icon-1">
+                                </iron-icon>
+                                <span class="style-scope happymap-header">Localización de las noticias</span>
+                            </div>
+
+                            <simple-heatmap
+                                data="{{getPlaces(articlesData)}}">    
+                            </simple-heatmap>
+                        </div>
+                    </div>
+
                 </div>
             </iron-pages>
         </div>   
@@ -173,6 +212,22 @@
                 console.log("Ready");
             },
 
+            getPlaces: function(data){
+                let places = []
+                data.hits.hits.forEach(function(entry){
+                    entry._source.entities.forEach(function(entity){
+                        if('schema:geo' in entity){
+                            let lat = (parseFloat(entity['schema:geo']['schema:latitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
+                            let lon = (parseFloat(entity['schema:geo']['schema:longitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
+                            places.push({'lat': lat, 'lon': lon})
+                            //places.push({'lat': entity['schema:geo']['schema:latitude'], 'lon': entity['schema:geo']['schema:longitude']})
+                        }
+                    })
+                });
+
+                return places
+            },
+
             _clientChanged: function() {
                 console.log("ClientChanged");
                 ready = true;
@@ -234,7 +289,7 @@
                                 'entities.name': {
                                     terms: {
                                         field: "entities.schema:name.keyword",
-                                        size : 50,
+                                        size : 20,
                                         order: {
                                             _count: "desc"
                                         }
@@ -253,7 +308,7 @@
                                 'categories.name': {
                                     terms: {
                                         field: "taxonomies.rdfs:label.keyword",
-                                        size: 50,
+                                        size: 10,
                                         order: {
                                             _count:"desc"
                                         }
