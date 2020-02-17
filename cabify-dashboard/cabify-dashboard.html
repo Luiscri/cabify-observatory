@@ -78,7 +78,6 @@
                         </div>
 
                         <div class="col-md-6 col-xs-12 col-lg-6">
-                            <!--
                             <spider-chart
                                 datos="{{articlesData}}"
                                 entity="categories.name"
@@ -87,7 +86,6 @@
                                 filters="{{filters}}"
                                 title="Categorías">
                             </spider-chart>
-                            -->
                         </div>
                     </div>
 
@@ -109,7 +107,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-12 col-md-6 mt-1">
+                        <div class="col-12 col-md-6">
                             <entities-chart
                                 field="entities.name"
                                 data="{{articlesData}}"
@@ -125,14 +123,10 @@
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <div class="top_bar_happy_map">
-                                <iron-icon icon="maps:place" class="style-scope dashboard-somedi x-scope iron-icon-1">
-                                </iron-icon>
-                                <span class="style-scope happymap-header">Localización de las noticias</span>
-                            </div>
-
                             <simple-heatmap
-                                data="{{getPlaces(articlesData)}}">    
+                                data="{{articlesData}}"
+                                title="Localización de las noticias"
+                                filters="{{filters}}">    
                             </simple-heatmap>
                         </div>
                     </div>
@@ -210,22 +204,6 @@
                 */
 
                 console.log("Ready");
-            },
-
-            getPlaces: function(data){
-                let places = []
-                data.hits.hits.forEach(function(entry){
-                    entry._source.entities.forEach(function(entity){
-                        if('schema:geo' in entity){
-                            let lat = (parseFloat(entity['schema:geo']['schema:latitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
-                            let lon = (parseFloat(entity['schema:geo']['schema:longitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
-                            places.push({'lat': lat, 'lon': lon})
-                            //places.push({'lat': entity['schema:geo']['schema:latitude'], 'lon': entity['schema:geo']['schema:longitude']})
-                        }
-                    })
-                });
-
-                return places
             },
 
             _clientChanged: function() {

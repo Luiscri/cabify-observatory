@@ -1,17 +1,26 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous">
+</script>
 <script src="https://pvb.io/js/heatmap.js"></script>
 <script src="https://pvb.io/js/leaflet-heatmap.js"></script>
 
 <dom-module id="simple-heatmap">
-    <template>
-        <style>
-            #heatmap {
-                width: 100%;
-                height: 400px;
-            }
-        </style>
+    <link rel="import" type="css" href="simple-heatmap.css">
 
-        <div id="heatmap"> 
+    <template>
+        <div
+            class="top_bar"
+            style$="background-color: #{{maincolor}};"
+        >
+            <iron-icon icon="maps:place" class="style-scope x-scope iron-icon-1"></iron-icon>
+            <span class="style-scope happymap-header">{{title}}</span>
+        </div>
+        <div id="heatmap">
+
         </div>
     </template>
 
@@ -21,9 +30,26 @@
         Polymer({
             is: 'simple-heatmap',
             properties: {
+                map: {
+                    type: Object
+                },
+
+                layer: {
+                    type: Object
+                },
+
+                cfg: {
+                    type: Object
+                },
+
                 data: {
                     type: Object,
                     observer: '_dataChanged'              
+                },
+
+                title: {
+                    type: String,
+                    value: ''
                 },
 
                 maincolor: {
@@ -43,23 +69,14 @@
                 }
             },
 
-            _dataChanged: function() {
-                let heatmapData = []
-                this.data.forEach(function(point){
-                    heatmapData.push({lat: point.lat, lng: point.lon, count: 1})
-                });
-
-                let dataCfg = {
-                    data: heatmapData
-                };
-
-                let cfg = {
+            ready: function() {
+                this.cfg = {
                     "radius": 15,
                     "maxOpacity": .5, 
                     "scaleRadius": false, 
                     "useLocalExtrema": true,
                     latField: 'lat',
-                    lngField: 'lng',
+                    lngField: 'lon',
                     valueField: 'count',
                     blur: 0.95,
                     gradient: { 
@@ -69,18 +86,49 @@
                     }
                 };
 
-                let map = new L.Map('heatmap').setView([40.416729, -3.703339], 5);
+                let that = this;
+                this.map = new L.Map(that.$.heatmap).setView([40.416729, -3.703339], 5);
                 L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
+                }).addTo(that.map);
 
-                let heatmapLayer = new HeatmapOverlay(cfg).addTo(map);
+                this.layer = new HeatmapOverlay(that.cfg).addTo(that.map);
 
-                heatmapLayer.setData(dataCfg);
-
-                document.getElementById('statistics').addEventListener('click', function(){
-                    map.invalidateSize();
+                // Only necessary if the heatmap is not visible when the page loads [i.e. second page (with id #statistics) of iron-pages]
+                $(document).ready(function(){
+                    $('#statistics').on('click', function(){
+                        that.map.invalidateSize();
+                    });
                 });
+            },
+
+            _dataChanged: function() {
+                let that = this;
+
+                this.layer.remove();
+                this.layer = new HeatmapOverlay(that.cfg).addTo(that.map);
+
+                let heatmapData = {
+                    data: this.getPlaces(this.data)
+                };             
+
+                this.layer.setData(heatmapData);
+            },
+
+            getPlaces: function(data){
+                let places = []
+                data.hits.hits.forEach(function(entry){
+                    entry._source.entities.forEach(function(entity){
+                        if('schema:geo' in entity){
+                            let lat = (parseFloat(entity['schema:geo']['schema:latitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
+                            let lon = (parseFloat(entity['schema:geo']['schema:longitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
+                            places.push({'lat': lat, 'lon': lon, 'count': 1})
+                            //places.push({'lat': entity['schema:geo']['schema:latitude'], 'lon': entity['schema:geo']['schema:longitude'], 'count': 1})
+                        }
+                    })
+                });
+
+                return places;
             }
         });
     </script>

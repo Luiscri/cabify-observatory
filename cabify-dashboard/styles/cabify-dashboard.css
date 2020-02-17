@@ -2,10 +2,6 @@ paper-material{
   background: white;
 }
 
-happymap-header {
-  margin: 0 auto;
-}
-
 .lists{
   padding: 0px;
 }
@@ -153,17 +149,6 @@ pre {
 
 google-chart {
   height: 400px;
-}
-
-
-.top_bar_happy_map {
-  width: 100%;
-  background-color: #063b65 ;
-  color: white;
-  text-align: center;
-  height: 35px;
-  line-height: 35px;
-  border-radius: 5px 5px 0 0;
 }
 
 .navBar {
