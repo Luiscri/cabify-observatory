@@ -145,13 +145,14 @@
         Polymer({
             is: 'cabify-dashboard',
             properties: {
+                // Para las iron-pages
                 selected: {
-                  type: Number,
-                  value: 0
+                    type: Number,
+                    value: 0
                 }, 
 
                 articlesData: {
-                  type: Object
+                    type: Object
                 },
 
                 query: {
@@ -159,20 +160,20 @@
                 },
 
                 client: {
-                  type: Object,
-                  notify: true,
-                  observer: '_clientChanged'              
+                    type: Object,
+                    notify: true,
+                    observer: '_clientChanged'              
                 },
 
                 fields: {
-                  type: Array,
-                  value: function() { return []; }
+                    type: Array,
+                    value: function() { return []; }
                 },
 
                 filters: {
-                  type: Array,
-                  notify: true,
-                  value: function() { return []; }
+                    type: Array,
+                    notify: true,
+                    value: function() { return []; }
                 }
             },
         
@@ -207,33 +208,38 @@
             },
 
             _clientChanged: function() {
-                console.log("ClientChanged");
+                console.log("Client Changed");
                 ready = true;
                 this._query();
             },
 
             _filtersChange: function() {
+                console.log('Filters Changed')
                 this._query();
             },
 
             _search: function(){
                 //console.log("search fired")
-                //console.log(this.query.length)
                 if (this.query.length == 0){
-                  //console.log("default search fired")
-                  this.filters = [];
-                  this._query()
+                    this.filters = [];
                 }
                 else {
-                  this.push('filters', {terms: {'text': [this.query]}});
-                  this._query()
+                    //Intentar filtrar por cuerpo y titulo de articulo schema:headline
+                    //let newFilters = {'schema:articleBody': [this.query]}
+                    this.push('filters', {terms: {'schema:articleBody': [this.query]}});
+
+                    /*
+                    filters = this.filters;
+                    filters.push({terms: {'schema:articleBody': [this.query]}});
+                    this.filters = filters;
+                    */
                 }
             },
 
             _query: function() {
-                console.log("_filtersChangedash")
-                var that = this;
-                console.log("Ready?: ", ready);
+                //console.log("_filtersChangedash")
+                //console.log("Ready?: ", ready);
+                let that = this;
                 if(ready){
                     this.client.search({
                         // undocumented params are appended to the query string
@@ -256,6 +262,7 @@
                                         }
                                     }
                                 },
+
                                 'schema:author': {
                                     terms: {
                                         field: "schema:author.keyword",
@@ -264,6 +271,7 @@
                                         }
                                     }
                                 },
+
                                 'entities.name': {
                                     terms: {
                                         field: "entities.schema:name.keyword",
@@ -283,6 +291,7 @@
                                         }
                                     }
                                 },
+
                                 'categories.name': {
                                     terms: {
                                         field: "taxonomies.rdfs:label.keyword",
@@ -302,6 +311,7 @@
                                         }
                                     }
                                 },
+
                                 'schema:datePublished': {
                                     date_histogram: {
                                         field: "schema:datePublished",

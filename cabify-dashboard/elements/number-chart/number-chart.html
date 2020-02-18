@@ -84,13 +84,13 @@
               var aggkey = this.aggkey;
               //console.log(aggkey)
               this.push('filters', {term: { 'eventId': object.toLowerCase()}})
-              console.log(this.filters)
+              //console.log(this.filters)
             },
             
             _dataChanged: function() {
               //console.log("data has changed")
               if(this.data == undefined || this.data.hits == undefined){
-                console.log("No data");
+                //console.log("No data");
                 return;
               }
               
@@ -124,7 +124,7 @@
                 //console.log(numberMax)
 		            //this.total = this.kFormatter(this.total);
                 progress = 100*num/numberMax;
-                console.log(progress)
+                //console.log(progress)
                 idBar.style.width = progress+"%";
               }
             }

@@ -144,11 +144,12 @@
         -->
         
         <div class="row">
-            <div class="card-deck">
+            <div class="card-deck d-flex">
                 <template is="dom-repeat" items="{{showing}}" as="article">
                     <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-4 mb-md-5">
                         <div
                             class="card"
+                            title$="{{article.schema:headline}}"
                             on-tap="showViewer"
                             data-id$="[[article.id]]"
                         >
@@ -240,24 +241,12 @@
                 defaultimage: {
                     type: String,
                     value: '/elements/articles-loader/assets/img/defaultImage.jpg'
-                },
-
-                fields: {
-                    type: Array,
-                    value: function() { return []; }
-                },
-
-                filters: {
-                    type: Array,
-                    notify: true,
-                    value: function() { return []; },
                 }
             },
 
             _dataChanged: function() {
-                var hits = this.data.hits.hits;
-                var results = []
-                 
+                let hits = this.data.hits.hits;
+                let results = []        
                 hits.forEach(function(article) {
                     results.push(article._source);
                 });
@@ -265,6 +254,11 @@
                 this.articles = results;
                 this.index = Math.min(9, results.length);
                 this.showing = results.slice(0, this.index);
+
+                if(results.length <= 9)
+                    document.getElementById('loadmore').style.display = "none";
+                else
+                    document.getElementById('loadmore').style.display = "inline";
             },
 
             addArticles: function(e, detail) {
@@ -345,8 +339,11 @@
             },
 
             getArticleBody: function(article) {
-                let body = article['schema:articleBody']
-                return body.replace(/\n/g, '\n\n')
+                if(article && 'schema:articleBody' in article){
+                    let body = article['schema:articleBody'];
+                    return body.replace(/\n/g, '');
+                }
+                return '';
             },
         });
     </script>
