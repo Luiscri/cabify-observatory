@@ -42,6 +42,11 @@
 *      Grids       *
 *******************/
 
+.card-deck {
+    display: flex;
+    flex: 1;
+}
+
 .card {
     -webkit-transition: .3s;
     transition: .3s;

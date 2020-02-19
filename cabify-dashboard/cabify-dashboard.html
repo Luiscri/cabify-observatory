@@ -8,6 +8,7 @@
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/articles-loader/articles-loader.html">
+<link rel="import" href="/elements/filters-viewer/filters-viewer.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="/elements/spider-chart/spider-chart.html">
@@ -41,6 +42,10 @@
                 search-value="{{query}}"
                 filters="{{filters}}">        
             </material-search>
+
+            <filters-viewer
+                filters="{{filters}}">
+            </filters-viewer>
 
             <iron-pages selected={{selected}}>
                 <div class="mt-5">
@@ -178,7 +183,7 @@
             },
         
             observers: [
-              '_filtersChange(filters.*)'
+              '_filtersChanged(filters.splices)'
             ],
 
             behaviors: [
@@ -213,26 +218,35 @@
                 this._query();
             },
 
-            _filtersChange: function() {
-                console.log('Filters Changed')
+            _filtersChanged: function() {
+                console.log('Filters Changed');
                 this._query();
             },
 
             _search: function(){
-                //console.log("search fired")
-                if (this.query.length == 0){
+                console.log("Search Fired");
+                if (this.query.length == 0)
                     this.filters = [];
-                }
                 else {
-                    //Intentar filtrar por cuerpo y titulo de articulo schema:headline
-                    //let newFilters = {'schema:articleBody': [this.query]}
-                    this.push('filters', {terms: {'schema:articleBody': [this.query]}});
-
-                    /*
-                    filters = this.filters;
-                    filters.push({terms: {'schema:articleBody': [this.query]}});
-                    this.filters = filters;
-                    */
+                    let filters = []
+                    this.query.trim().split(/\s+/).forEach(function(word){
+                        let should = {
+                                        'bool': {
+                                            'should': [{
+                                                terms: {
+                                                    'schema:articleBody': [word.toLowerCase()]
+                                                }
+                                            }, {
+                                                terms: {
+                                                    'schema:headline': [word.toLowerCase()]
+                                                }
+                                            }]
+                                        }
+                        };
+                        filters.push(should);
+                    });
+                    this.push('filters', ...filters);
+                    //this.push('filters', {terms: {'schema:articleBody': [this.query]}});
                 }
             },
 
