@@ -49,10 +49,10 @@ paper-icon-button.green:hover {
 .number {
   color: white !important;
   padding: 2px;
-  padding-right: 15px;
+  padding-right: 10px;
   padding-left: 10px;
-  border-bottom-right-radius: 10px;
-  border-top-right-radius: 10px;
+  border-bottom-right-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
   margin-right: -1px;
   margin-left: 5px;
 }

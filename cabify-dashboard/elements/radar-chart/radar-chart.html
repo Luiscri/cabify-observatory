@@ -1,0 +1,157 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<!-- D3.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+<script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous">
+</script>
+
+<dom-module id="radar-chart">
+    <script src="radar-chart.js"></script> 
+    <link rel="import" type="css" href="radar-chart.css"> 
+
+    <template>
+        <paper-material elevation="1"  style$="height: {{height}}px; display: flex; flex-direction: column;">
+            <div
+                class="top-bar"
+                style$="background-color: #{{maincolor}};"
+            >
+                <iron-icon icon="maps:place" class="style-scope x-scope iron-icon-1"></iron-icon>
+                <span class="style-scope happymap-header">{{bartitle}}</span>
+            </div>
+
+            <div id="radar-chart" style="display: flex; flex: 1;"></div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <div style="display: flex; align-items: center;">
+                    <small>Clear Filters</small>
+                    <paper-icon-button icon="delete" alt="menu" class="grey" on-tap="removeFilters"></paper-icon-button>
+                </div>
+            </div>
+        </paper-material>
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'radar-chart',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                datos: {
+                    type: Array,
+                    value: []
+                },
+
+                entity: {
+                    type: String
+                },
+
+                height: {
+                    type: Number,
+                    value: 500
+                },
+
+                bartitle: {
+                    type: String
+                },
+
+                maincolor: {
+                    type: String,
+                    value: '354169'
+                },
+
+                filters: {
+                    type: Array,
+                    notify: true,
+                    value: function() { return []; }
+                },
+            },
+
+            ready: function() {
+                // Only necessary if the chart is not visible when the page loads [i.e. second page (with id #statistics) of iron-pages]
+                let that = this;
+                $(document).ready(function(){
+                    $('#statistics').on('click', function(){
+                        that.drawChart();
+                    });
+
+                    $(window).on('resize', function(){
+                        that.drawChart();
+                    });
+                });
+            },
+
+            _dataChanged: function() {
+                let aggs = [];
+                aggs.push(this.data.aggregations[this.entity]["buckets"]);
+
+                let d = []
+                aggs[0].forEach(function(entry){
+                    d.push({axis: entry.key, value: entry.doc_count}) // Change radar-chart.js line 135 according to requirements
+                });
+
+                this.datos = [d]
+                this.drawChart();
+            },
+
+            drawChart: function() {
+                let that = this;
+                let container = $('#radar-chart');
+                let width = container.width();
+                let height = container.height();
+                let scale = 0.7;
+                let color = d3.scale.ordinal()
+                                .range(["#"+that.maincolor]);
+                let textsize = "14px";
+                let format = "d"; //Decimal rounded to integer
+                    
+                let cfg = {
+                    w: width,
+                    h: height,
+                    scale: scale,
+                    textsize: textsize,
+                    format: format,
+                    levels: 3,
+                    maxValue: 0,
+                    radians: 2 * Math.PI,
+                    opacityArea: 0.4,
+                    roundStrokes: false,
+                    color: color
+                };
+
+                //Call function to draw the Radar chart
+                RadarChart("#radar-chart", this.datos, cfg);
+
+                //Add filters when circles are clicked
+                d3.selectAll(".radarInvisibleCircle")
+                    .on('click', function(d){
+                        let field ="taxonomies.rdfs:label.keyword"
+                    
+                        let term = {}
+                        term[field] = d.axis
+                        that.push('filters', {term: term})
+                    });
+
+                d3.selectAll(".legend")
+                    .on('click', function(d){
+                        let field ="taxonomies.rdfs:label.keyword"
+                    
+                        let term = {}
+                        term[field] = d
+                        that.push('filters', {term: term})
+                    });
+            },
+
+            removeFilters: function(){
+                this.filters = [];
+            },
+        });
+    </script>
+</dom-module>

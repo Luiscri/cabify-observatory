@@ -1,0 +1,18 @@
+#filters-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    padding: 5px 5px 5px 10px;
+    color: white;
+    font-weight: bold;
+    border-radius: 35px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.close-icon {
+    cursor: pointer;
+}

@@ -8,10 +8,10 @@
 
   <template>
     <!-- Shadow DOM -->
-    <paper-material class="entities" elevation="1" style="min-height: 325px; display: flex; flex-direction: column; justify-content: space-between;">
+    <paper-material class="entities" elevation="1" style$="height: {{height}}px; display: flex; flex-direction: column; justify-content: space-between;">
       <div class="top-bar">
         <iron-icon icon="{{icon}}"></iron-icon>
-        <span>{{title}}</span>
+        <span>{{bartitle}}</span>
       </div>
       <div id="nodata" style="margin-top: 60px">No entries match the current filters</div>
       <div class="content" style="text-align:center; margin: 0 auto; min-height: 46px;">
@@ -28,7 +28,9 @@
 
         <template is="dom-repeat" items="{{entities}}" as="entity">
 
-          <span class="badge badge-secondary" on-tap="filter" style$="background-color: {{getBgColour(entity.2)}}7d; color:#505050; border-color:{{getBgColour(entity.2)}}" data-color$="{{getBgColour(entity.2)}}">{{getEntity(entity.0)}}<span class="number" style$="background-color:{{getBgColour(entity.2)}}">{{entity.1}}</span></span>
+          <span class="badge badge-secondary" on-tap="filter" style$="background-color: {{getBgColour(entity.2)}}7d; color:#505050; border-color:{{getBgColour(entity.2)}}" data-color$="{{getBgColour(entity.2)}}">{{getEntity(entity.0)}}
+            <span class="number" style$="background-color:{{getBgColour(entity.2)}}">{{entity.1}}</span>
+          </span>
 
         </template>
       </div>
@@ -58,20 +60,29 @@
         icon: {
           type: String
         },
+
         entities: {
           type: Array
         },
 
-        title: {
+        bartitle: {
           type: String,
           value: "Entities Chart"
         },
+
+        height: {
+          type: Number,
+          value: 500
+        },
+
         legend: {
           type: Array,
         },
+
         color: {
           type: String
         },
+
         query: {
           type: String,
           observer: '_queryChanged'
@@ -113,6 +124,7 @@
       ready: function(){
 
       },
+
       _dataChanged: function() {
         var that = this
         var aggs = 0
@@ -153,6 +165,7 @@
         that.entities = data;
         filtered = true;
       },
+
       getEntity: function(entity) {
         switch(this.field){
           case "entities.name":
@@ -166,6 +179,7 @@
             return name.substring(0,50)+"..."
         }
       },
+
       getBgColour: function(type){
 
         var legend_elements = this.legend
@@ -197,7 +211,6 @@
       },
 
       filter: function(e) {
-        var myfilters = [e.model.__data__.entity[0]]
         var field =""
         switch(this.field){
           case "entities.name":
@@ -209,9 +222,9 @@
           default:
             break;
         }
-        var terms = {}
-        terms[field]=myfilters
-        this.push('filters', { terms: terms})
+        var term = {}
+        term[field] = e.model.__data__.entity[0]
+        this.push('filters', {term: term})
       }
 
     });

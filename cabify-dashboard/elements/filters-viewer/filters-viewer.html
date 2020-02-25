@@ -1,0 +1,85 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="filters-viewer">
+    <link rel="import" type="css" href="filters-viewer.css">
+
+    <template>
+        <div id="filters-container" class$="{{class}}">
+            <template is="dom-repeat" items="{{words}}" as="word">
+                <span
+                    class="filter-label"
+                    style$="background-color: #{{maincolor}};"
+                >
+                    {{word}}
+                    <iron-icon icon="close" class="close-icon" on-tap="clearFilter"></iron-icon>
+                </span>
+            </template>
+        </div>
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'filters-viewer',
+            properties: {
+                filters: {
+                    type: Array,
+                    notify: true,
+                    value: function() { return []; }
+                },
+
+                class: {
+                    type: String
+                },
+
+                words: {
+                    type: Array,
+                    value: []
+                },
+
+                maincolor: {
+                    type: String,
+                    value: '354169'
+                }
+            },
+
+            observers: [
+              '_filtersChanged(filters.splices)'
+            ],
+
+            _filtersChanged: function() {
+                let words = []
+                this.filters.forEach(function(query){
+                    if('bool' in query && 'should' in query.bool){
+                        // material-search
+                        let search = query.bool.should[0].term;
+                        let key = Object.keys(search)[0];
+                        words.push(search[key]);
+                    }else if('term' in query){
+                        let key = Object.keys(query.term)[0];
+                        let word = query.term[key].toLowerCase();
+
+                        // spider-chart
+                        if(key === 'taxonomies.rdfs:label.keyword'){
+                            let splitted = word.split('/');
+                            word = splitted[splitted.length-1]
+                        }
+
+                        words.push(word);
+                    }else if('terms' in query) {
+                        let key = Object.keys(query.terms)[0];
+                        words.push(query.terms[key][0]);
+                    }
+                });
+
+                this.words = words;
+            },
+
+            clearFilter: function(e) {
+                this.splice('filters', e.model.index, 1);
+            }
+        });
+    </script>
+</dom-module>

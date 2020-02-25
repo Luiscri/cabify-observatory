@@ -1,0 +1,21 @@
+.happymap-header {
+ 	margin: 0 auto;
+}
+
+.top-bar {
+ 	width: 100%;
+ 	color: white;
+ 	text-align: center;
+ 	height: 35px;
+ 	line-height: 35px;
+ 	border-radius: 5px 5px 0 0;
+}
+
+paper-icon-button.grey {
+ 	color: var(--paper-grey-500);
+}
+
+paper-icon-button.green:hover {
+ 	background: var(--paper-green-50);
+ 	border-radius: 50%;
+}

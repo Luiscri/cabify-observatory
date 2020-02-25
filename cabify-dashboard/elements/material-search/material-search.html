@@ -58,7 +58,7 @@
       <paper-toolbar class$="{{_computeHeaderClass(narrow)}}">
         <paper-icon-button icon="search" on-tap="toggle"></paper-icon-button>
         <div hidden$="{{!active}}" class="span">
-          <input id="searchbox" placeholder="Search Field" class="flex" value="{{searchValue::input}}">
+          <input id="searchbox" placeholder="Filtrar por término" class="flex" value="{{searchValue::input}}">
           <paper-icon-button icon="delete" alt="rubbish" on-tap="removeFilters">></paper-icon-button>
         </div>
       </paper-toolbar>
@@ -101,6 +101,7 @@
       },
 
       onSelect: function(e, detail) {
+        document.getElementById('searchbox').value = '';
         this.async(function() {
           this.searchValue = detail.item.dataset.value;
         }, 250); // Introduce small delay so user sees ripple.

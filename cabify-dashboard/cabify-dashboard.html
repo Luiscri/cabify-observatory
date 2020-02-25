@@ -12,6 +12,7 @@
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="/elements/spider-chart/spider-chart.html">
+<link rel="import" href="/elements/radar-chart/radar-chart.html">
 <link rel="import" href="/elements/entities-chart/entities-chart.html">
 
 <!-- Latest compiled and minified CSS -->
@@ -44,11 +45,22 @@
             </material-search>
 
             <filters-viewer
-                filters="{{filters}}">
+                filters="{{filters}}"
+                class="mt-3 mb-2">
             </filters-viewer>
 
+            <number-chart
+                data="{{articlesData}}"
+                aggkey="schema:author"
+                title="Noticias seleccionadas"
+                subtitle="Total"
+                total="[[articlesData.hits.total]]"
+                stylebg="bg-navy"
+                icon="elements/number-chart/img/news.svg">
+            </number-chart>
+
             <iron-pages selected={{selected}}>
-                <div class="mt-5">
+                <div class="mt-4">
                     <articles-loader
                         data="{{articlesData}}"
                         filters="{{filters}}"
@@ -57,23 +69,15 @@
                 </div>
 
                 <div>
-                    <div class="row mt-4">
-                        <div class="col-12 col-md-6">
-                            <number-chart
-                                data="{{articlesData}}"
-                                aggkey="schema:author"
-                                title="Noticias seleccionadas"
-                                subtitle="Noticias totales"
-                                total="[[articlesData.hits.total]]"
-                                stylebg="bg-green"
-                                icon="elements/number-chart/img/noticia485.png">
-                            </number-chart>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mt-4">
                             <google-chart
                                 field="schema:author"
                                 data="{{articlesData}}"
                                 type="pie"
                                 id="pie-chart"
                                 extra-id="pie-chart"
+                                height="450"
                                 filters="{{filters}}"
                                 sources="{{sources}}"
                                 icon="icons:donut-small"
@@ -82,20 +86,19 @@
                             </google-chart>
                         </div>
 
-                        <div class="col-md-6 col-xs-12 col-lg-6">
-                            <spider-chart
-                                datos="{{articlesData}}"
+                        <div class="col-12 col-md-6 mt-4">
+                            <radar-chart
+                                data="{{articlesData}}"
                                 entity="categories.name"
-                                icon="icons:assessment"
-                                field="taxonomies"
-                                filters="{{filters}}"
-                                title="Categorías">
-                            </spider-chart>
+                                height="450"
+                                bartitle="Categorías"
+                                filters="{{filters}}">
+                            </radar-chart>
                         </div>
                     </div>
 
                     <div class= "row">
-                        <div class="col-12">
+                        <div class="col-12 mt-4">
                             <google-chart
                                 field="schema:datePublished"
                                 data="{{articlesData}}"
@@ -103,6 +106,7 @@
                                 id="line-chart"
                                 extra-id="line-chart"
                                 filters="{{filters}}"
+                                height="350"
                                 sources="{{sources}}"
                                 icon="icons:trending-up"
                                 options='{"title": "Distribución en el tiempo de las noticias"}'
@@ -112,11 +116,12 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-6 mt-4">
                             <entities-chart
                                 field="entities.name"
                                 data="{{articlesData}}"
-                                title="Entidades"
+                                bartitle="Entidades"
+                                height="400"
                                 icon="icons:list"
                                 param="{{param}}"
                                 id="entitieschart"
@@ -127,10 +132,11 @@
                             </entities-chart>
                         </div>
 
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-md-6 mt-4">
                             <simple-heatmap
                                 data="{{articlesData}}"
-                                title="Localización de las noticias"
+                                height="400"
+                                bartitle="Localización de las noticias"
                                 filters="{{filters}}">    
                             </simple-heatmap>
                         </div>
@@ -220,6 +226,7 @@
 
             _filtersChanged: function() {
                 console.log('Filters Changed');
+                //console.log(this.filters)
                 this._query();
             },
 
@@ -233,12 +240,12 @@
                         let should = {
                                         'bool': {
                                             'should': [{
-                                                terms: {
-                                                    'schema:articleBody': [word.toLowerCase()]
+                                                term: {
+                                                    'schema:articleBody': word.toLowerCase()
                                                 }
                                             }, {
-                                                terms: {
-                                                    'schema:headline': [word.toLowerCase()]
+                                                term: {
+                                                    'schema:headline': word.toLowerCase()
                                                 }
                                             }]
                                         }

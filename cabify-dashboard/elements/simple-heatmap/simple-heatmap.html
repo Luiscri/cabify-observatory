@@ -12,15 +12,15 @@
     <link rel="import" type="css" href="simple-heatmap.css">
 
     <template>
-        <div
-            class="top_bar"
-            style$="background-color: #{{maincolor}};"
-        >
-            <iron-icon icon="maps:place" class="style-scope x-scope iron-icon-1"></iron-icon>
-            <span class="style-scope happymap-header">{{title}}</span>
-        </div>
-        <div id="heatmap">
-
+        <div style$="height: {{height}}px; display: flex; flex-direction: column;">
+            <div
+                class="top-bar"
+                style$="background-color: #{{maincolor}};"
+            >
+                <iron-icon icon="maps:place" class="style-scope x-scope iron-icon-1"></iron-icon>
+                <span class="style-scope happymap-header">{{bartitle}}</span>
+            </div>
+            <div id="heatmap" style="flex: 1;"></div>
         </div>
     </template>
 
@@ -30,6 +30,16 @@
         Polymer({
             is: 'simple-heatmap',
             properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                height: {
+                    type: Number,
+                    value: 500
+                },
+
                 map: {
                     type: Object
                 },
@@ -42,12 +52,7 @@
                     type: Object
                 },
 
-                data: {
-                    type: Object,
-                    observer: '_dataChanged'              
-                },
-
-                title: {
+                bartitle: {
                     type: String,
                     value: ''
                 },
@@ -120,6 +125,7 @@
                 data.hits.hits.forEach(function(entry){
                     entry._source.entities.forEach(function(entity){
                         if('schema:geo' in entity){
+                            // Add random seed so that fixed coordinates look like different points
                             let lat = (parseFloat(entity['schema:geo']['schema:latitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
                             let lon = (parseFloat(entity['schema:geo']['schema:longitude']) + Math.random()*(0.009-0.001)+0.001).toFixed(6)
                             places.push({'lat': lat, 'lon': lon, 'count': 1})
