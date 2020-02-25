@@ -66,7 +66,7 @@ Data can be provided in one of three ways:
 
     <div style="display: flex; justify-content: flex-end;">
       <div style="display: flex; align-items: center;">
-        <small>Clear Filters</small>
+        <small>Borrar Filtros</small>
         <paper-icon-button icon="delete" alt="menu" class="grey" on-tap="removeFilters"></paper-icon-button>
       </div>
     </div>
@@ -291,14 +291,15 @@ Data can be provided in one of three ways:
     _dataTable: null,
     _chartTypes: null,
     _readyForAction: function(e, detail, sender) {
+      let that = this;
       this._loadPackageByChartType();
       google.load("visualization", "1", {
         packages: this._packages[this.type],
         callback: function() {
-          this._isReady = true;
-          this._loadChartTypes();
-          this._loadData();
-        }.bind(this)
+          that._loadChartTypes();
+          that._isReady = true;
+          //that._loadData();
+        }.bind(that)
       });
     },
 
@@ -424,11 +425,11 @@ Data can be provided in one of three ways:
       let that = this;
       $(document).ready(function(){
         $('#statistics').on('click', function(){
-          that.drawChart();
+          that._loadData();
         });
 
         $(window).on('resize', function(){
-          that.drawChart();
+          that._loadData();
         });
       });
     },
@@ -447,7 +448,7 @@ Data can be provided in one of three ways:
      * @method Chart
      * @return {Object} Returns null.
      */
-     drawChart: function() {
+    drawChart: function() {
       // console.log("inside drawing")
       if (this._canDraw) {
         if (!this.options) {
