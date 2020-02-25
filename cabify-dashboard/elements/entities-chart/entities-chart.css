@@ -19,12 +19,12 @@
   vertical-align: middle;
 }
 
-paper-icon-button.green {
-  color: var(--paper-green-500);
+paper-icon-button.grey {
+  color: var(--paper-grey-500);
 }
 
-paper-icon-button.green:hover {
-  background: var(--paper-green-50);
+paper-icon-button.grey:hover {
+  background: var(--paper-grey-50);
   border-radius: 50%;
 }
 
