@@ -114,6 +114,8 @@
 
 .badge {
     color: white;
+    display: flex;
+    align-items: center;
 }
 
 .circle {
@@ -146,4 +148,10 @@
 .circle.plus:after{
     margin: auto 15px;
     height: 4px;
+}
+
+.categories-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }

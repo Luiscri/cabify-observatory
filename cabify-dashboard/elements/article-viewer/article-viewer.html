@@ -87,27 +87,34 @@
                         <div class="col-12">
 
                             <div class="d-flex align-items-center medium-text">
+                                <strong class="m-1">Entidades: </strong>
                                 <div class="square place" style="margin-left: 0px;"></div>Lugar
                                 <div class="square organization"></div>Organización
                                 <div class="square person"></div>Persona
-                                <div class="square category"></div>Categoría
                             </div>
 
                             <template is="dom-repeat" items="{{article.entities}}" as="entity">
                                 <span
                                     class="badge badge-secondary p-1"
                                     on-tap="highlightExcerpt"
-                                    style$="background-color: {{getBadgeBackground(entity)}};"
+                                    style$="background-color: {{getBadgeBackgroundEntity(entity)}};"
                                 >
                                     {{entity.schema:name}}
                                 </span>
                             </template>
 
+                            <div class="d-flex align-items-center medium-text">
+                                <strong class="m-1">Categorías: </strong>
+                                <div class="square transport" style="margin-left: 0px;"></div>Transporte Sostenible
+                                <div class="square beneficios"></div>Beneficios
+                                <div class="square infrpolitc"></div>Infraestructuras y Políticas Sostenibles
+                                <div class="square tecnologia"></div>Tecnologías
+                            </div>
                             <template is="dom-repeat" items="{{article.taxonomies}}" as="entity">
                                 <span
                                     class="badge badge-secondary p-1"
                                     on-tap="highlightExcerpt"
-                                    style$="background-color: {{getBadgeBackground(entity)}};"
+                                    style$="background-color: {{getBadgeBackgroundCategory(entity)}};"
                                 >
                                     {{getCategoryName(entity)}}
                                 </span>
@@ -183,7 +190,7 @@
 
             _visibilityChanged: function() {
                 if(this.display){
-                    document.getElementById("article-body").innerHTML = this.article['schema:articleBody']
+                    document.getElementById("article-body").innerHTML = this.getArticleBody(this.article)
                     this.customStyle['--my-elem-right'] = '0px';
                     this.updateStyles();
                 }else{
@@ -200,7 +207,7 @@
                 document.body.style.overflowX = "hidden";
             },
 
-            getBadgeBackground: function(item){
+            getBadgeBackgroundEntity: function(item){
                 if(item["@type"][0] === "schema:Place")
                     color = "#ff9900"
                 else if(item["@type"][0] === "schema:Organization")
@@ -213,6 +220,22 @@
                 return color;
             },
 
+            getBadgeBackgroundCategory: function(item){
+                var str = item['rdfs:label'];
+                mySubString = str.slice(1,str.substr(str.indexOf("/") + 1).indexOf("/")+1);
+                if(mySubString === "Transporte Sostenible")
+                    color = "#4ec499"
+                else if(mySubString === "Beneficios")
+                    color = "#6c76ed"
+                else if(mySubString === "Infraestructuras y politicas sostenibles")
+                    color = "#dcde3f"
+                else if(mySubString === "Tecnologia")
+                    color = "#b556ff"
+                else
+                    color = "#5f5755"
+                return color;
+            },
+
             getCategoryName: function(taxonomy){
                 var tag = taxonomy['rdfs:label']
                 return tag.substr(tag.lastIndexOf("/")+1);
@@ -220,21 +243,47 @@
 
             highlightExcerpt: function(e) {
                 var element = document.getElementById("article-body")
-                var text = this.article['schema:articleBody']
+                var text = this.getArticleBody(this.article)
                 var text_highlighted=""
                 var beginIndex = e.model.__data__.entity["nif:beginIndex"]
                 var endIndex = e.model.__data__.entity["nif:endIndex"]
                 var cnt=0
 
+                if(typeof e.model.__data__.entity["@type"] === "string"){
+                    var str = e.model.__data__.entity['rdfs:label'];
+                    mySubString = str.slice(1,str.substr(str.indexOf("/") + 1).indexOf("/")+1);
+                    if(mySubString === "Transporte Sostenible")
+                        color = "#4ec499"
+                    else if(mySubString === "Beneficios")
+                        color = "#6c76ed"
+                    else if(mySubString === "Infraestructuras y politicas sostenibles")
+                        color = "#dcde3f"
+                    else if(mySubString === "Tecnologia")
+                        color = "#b556ff"
+                    else
+                        color = "#5f5755"
+                }
+                else{
+                    if(e.model.__data__.entity["@type"][0] === "schema:Place")
+                        color = "#ff9900"
+                    else if(e.model.__data__.entity["@type"][0] === "schema:Organization")
+                        color = "#dd4b39"
+                    else if(e.model.__data__.entity["@type"][0] === "schema:Person")
+                        color = "#00c0ef"
+                    else
+                        color = "#5f5755"
+                }
+                console.log(color)
+
                 if (beginIndex[0] >= 0) {
                     if(text[beginIndex[0]]===' ')
                         cnt+=1
-                    text_highlighted = text.substring(0,beginIndex[0]+cnt) + "<span id='locator' style='background-color:yellow'>" + text.substring(beginIndex[0]+cnt,endIndex[0]+1+cnt) + "</span>"
+                    text_highlighted = text.substring(0,beginIndex[0]+cnt) + "<span id='locator' style='background-color:"+color+"; color:white; font-weight:bold'>" + text.substring(beginIndex[0]+cnt,endIndex[0]+1+cnt) + "</span>"
                     for(var i =1 ; i<beginIndex.length;i++){
                         if(text[beginIndex[i]+cnt]===' ')
                             cnt+=1
                         text_highlighted+=text.substring(endIndex[i-1]+1+cnt,beginIndex[i]+cnt)
-                        text_highlighted+="<span style='background-color:yellow'>"
+                        text_highlighted+="<span style='background-color:"+color+"; color:white; font-weight:bold'>"
                         text_highlighted+=text.substring(beginIndex[i]+cnt,endIndex[i]+1+cnt)
                         text_highlighted+="</span>"
                     }
@@ -302,6 +351,16 @@
 
             getArticleBody: function(article) {
                 if(article){
+                    /*
+                    let response = "";
+                    let text = article['schema:articleBody'].replace(/\n/g, '\n');
+                    let paragraphs = text.split('\n');
+                    paragraphs.forEach(function(paragraph){
+                        response += "<p>" + paragraph + "</p>";
+                    });
+
+                    return response
+                    */
                     return article['schema:articleBody']
                 }
                 return ''

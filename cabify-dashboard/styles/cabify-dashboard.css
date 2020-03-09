@@ -202,20 +202,28 @@ google-chart {
   align-content: center;;
 }
 
-.footer{
+.footer {
   margin-top: 0.1%;
-  height: 100px;
-  background-color: #e0e6e9;
+  height: 150px;
+  /*background-color: #e0e6e9;*/
+  background-color: #cdcdcd;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-content: center;
   width: 100%;
-  padding: 20px 0;   
+  padding: 30px 20px;   
 }
 
-.gsi_logo{
+.catedra_logo {
   object-fit: contain;
+}
+
+.copyright {
+  background-color: #354169;
+  padding: 10px;
+  color: white;
+  text-align: center;
 }
 
 @media screen and (min-width: 480px) and (max-width: 959px){

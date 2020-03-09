@@ -3,8 +3,6 @@ version: '2'
 services:
   dashboard:
     build: cabify-dashboard/
-    ports:
-     - "8080:8080"
     environment:
       - ES_ENDPOINT_EXTERNAL=${ES_ENDPOINT_EXTERNAL}
       - NODE_PATH=${NODE_PATH}
@@ -13,6 +11,8 @@ services:
      - ./cabify-dashboard/:/usr/src/app/
     networks:
       - dashboard-network
+    ports:
+     - "8080:8080"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
@@ -40,9 +40,51 @@ services:
     ports:
       - 9200:9200
 
+  senpy:
+    build: senpy/
+    environment:
+      - BABELFY_API_KEY=${BABELFY_API_KEY}
+    networks:
+      - dashboard-network
+    ports: 
+      - "5000:5000"
+
+  luigid:
+    image: axiom/docker-luigi:latest-alpine
+    networks:
+      - dashboard-network
+    ports:
+      - "8082:8082"
+
+  orchestrator:
+    image: orchestrator-cabify
+    build: orchestrator/
+    depends_on:
+      - "elasticsearch"
+      - "senpy"
+      - "luigid"
+    environment:
+      - NEWS_API_KEY=${NEWS_API_KEY}
+      - ES_NETWORK_LOCATION=${ES_NETWORK_LOCATION}
+      - ES_HOST=${ES_HOST}
+      - SENPY_NETWORK_LOCATION=${SENPY_NETWORK_LOCATION}
+    tty: true
+    volumes:
+      - observatorydata1:/usr/src/app/data/
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - dashboard-network
+
 volumes:
   esdata1:
     driver: local
+
+  observatorydata1:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${DATA_DIRECTORY_PATH}
+      o: bind
 
 networks:
   dashboard-network:

@@ -178,6 +178,22 @@
     background-color: #5f5755;
 }
 
+.transport {
+    background-color: #4ec499;
+}
+
+.beneficios {
+    background-color: #6c76ed;
+}
+
+.infrpolitc {
+    background-color: #dcde3f;
+}
+
+.tecnologia {
+    background-color: #b556ff;
+}
+
 .article-headline {
     font-size: 35px;
     line-height: 35px;
@@ -194,4 +210,5 @@
 .article-body {
     font-size: 16px;
     text-align: justify;
+    white-space:pre-wrap;
 }

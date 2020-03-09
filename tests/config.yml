@@ -1,0 +1,7 @@
+ES_ENDPOINT: http://localhost:9200/articles/
+#ES_ENDPOINT: http://localhost:19200/gsicrawler/
+index: articles
+type: article
+DASHBOARD_ENDPOINT: http://localhost:8080
+SENPY_ENDPOINT: http://localhost:5000/
+ORCHESTRATOR_PATH: ../orchestrator

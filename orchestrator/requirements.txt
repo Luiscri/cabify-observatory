@@ -1,0 +1,3 @@
+luigi
+newspaper3k
+elasticsearch

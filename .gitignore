@@ -1,6 +1,4 @@
 elasticUpload.py
 mergeFiles.py
-ner/news.txt
-scrapper/news.txt
-scrapper/clusterScrapper.py
-scrapper/clusterSched.py
+news.txt
+newsOntologyNER.txt
