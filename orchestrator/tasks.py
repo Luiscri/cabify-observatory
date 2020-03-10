@@ -91,8 +91,8 @@ class AnalyzerTask(luigi.Task):
             for line in infile.readlines():
                 article = json.loads(line)
                 
-                senpy_endpoint = os.environ.get("SENPY_NETWORK_LOCATION")
-                url = urlunsplit(['http', senpy_endpoint, '/api', '', ''])
+                senpy_network = os.environ.get("SENPY_NETWORK_LOCATION")
+                url = urlunsplit(['http', senpy_network, '/api', '', ''])
                 params = {
                     'algo': 'taxonomiesPlugin',
                     'i': article['schema:articleBody']
@@ -102,8 +102,8 @@ class AnalyzerTask(luigi.Task):
                     logger.error(response['message'], extra={'methodname': self.__class__.__name__})
                     continue
                 elif response['@type'] == 'Results' and 'entries' in response:
-                    if response['entries'][0]:
-                        article['taxonomies'] = response['entries'][0]
+                    if response['entries']:
+                        article['taxonomies'] = response['entries']
                     else:
                         logger.info('Article discarded: it did not match any of the categories.', extra={'methodname': self.__class__.__name__})
                         continue
@@ -114,7 +114,11 @@ class AnalyzerTask(luigi.Task):
                     logger.error(response['message'], extra={'methodname': self.__class__.__name__})
                     continue
                 elif response['@type'] == 'Results' and 'entries' in response:
-                    article['entities'] = response['entries'][0]
+                    if response['entries']:
+                        article['entities'] = response['entries']
+                    else:
+                        logger.info('Article discarded: not entities found.', extra={'methodname': self.__class__.__name__})
+                        continue
 
                 articles.append(article)
 

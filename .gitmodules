@@ -1,0 +1,6 @@
+[submodule "senpy/nerspacyplugin"]
+	path = senpy/nerspacyplugin
+	url = https://lab.gsi.upm.es/cabify/observatory/nerspacyplugin
+[submodule "senpy/taxonomiesplugin"]
+	path = senpy/taxonomiesplugin
+	url = https://lab.gsi.upm.es/cabify/observatory/taxonomiesplugin
