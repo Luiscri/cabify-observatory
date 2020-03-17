@@ -2,7 +2,6 @@
 <link rel="import" href="/bower_components/paper-material/paper-material.html">
 <link rel="import" href="/bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="/bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="/elements/happymap/happymap-element.html">
 <link rel="import" href="/elements/simple-heatmap/simple-heatmap.html">
 <link rel="import" href="/elements/material-search/material-search.html">
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
@@ -31,120 +30,122 @@
             </div>
         </div>
 
-        <div class="container my-5">
+        <div class="jumbotron-fluid">
+            <div class="my-container my-5">
 
-            <paper-tabs selected="{{selected}}">
-                <paper-tab>Noticias</paper-tab>
-                <paper-tab id="statistics">Estadísticas</paper-tab>
-            </paper-tabs>
+                <paper-tabs selected="{{selected}}">
+                    <paper-tab>Noticias</paper-tab>
+                    <paper-tab id="statistics">Estadísticas</paper-tab>
+                </paper-tabs>
 
-            <material-search
-                active=True
-                search-value="{{query}}"
-                filters="{{filters}}">        
-            </material-search>
+                <material-search
+                    active=True
+                    search-value="{{query}}"
+                    filters="{{filters}}">        
+                </material-search>
 
-            <filters-viewer
-                filters="{{filters}}"
-                class="mt-3 mb-2">
-            </filters-viewer>
+                <filters-viewer
+                    filters="{{filters}}"
+                    class="mt-3 mb-2">
+                </filters-viewer>
 
-            <number-chart
-                data="{{articlesData}}"
-                aggkey="schema:author"
-                title="Noticias seleccionadas"
-                subtitle="Total"
-                total="[[articlesData.hits.total]]"
-                stylebg="bg-navy"
-                icon="elements/number-chart/img/news.svg">
-            </number-chart>
+                <number-chart
+                    data="{{articlesData}}"
+                    aggkey="schema:author"
+                    title="Noticias seleccionadas"
+                    subtitle="Total"
+                    total="[[articlesData.hits.total]]"
+                    stylebg="bg-navy"
+                    icon="elements/number-chart/img/news.svg">
+                </number-chart>
 
-            <iron-pages selected={{selected}}>
-                <div class="mt-4">
-                    <articles-loader
-                        data="{{articlesData}}"
-                        filters="{{filters}}"
-                    >
-                    </articles-loader>
-                </div>
-
-                <div>
-                    <div class="row">
-                        <div class="col-12 col-md-6 mt-4">
-                            <google-chart
-                                field="schema:author"
-                                data="{{articlesData}}"
-                                type="pie"
-                                id="pie-chart"
-                                extra-id="pie-chart"
-                                height="450"
-                                filters="{{filters}}"
-                                sources="{{sources}}"
-                                icon="icons:donut-small"
-                                options='{"title": "Noticias"}'
-                                optionsbi='{"is3D": "true"}'>
-                            </google-chart>
-                        </div>
-
-                        <div class="col-12 col-md-6 mt-4">
-                            <radar-chart
-                                data="{{articlesData}}"
-                                entity="categories.name"
-                                height="450"
-                                bartitle="Categorías"
-                                filters="{{filters}}">
-                            </radar-chart>
-                        </div>
+                <iron-pages selected={{selected}}>
+                    <div class="mt-4">
+                        <articles-loader
+                            data="{{articlesData}}"
+                            filters="{{filters}}"
+                        >
+                        </articles-loader>
                     </div>
 
-                    <div class= "row">
-                        <div class="col-12 mt-4">
-                            <google-chart
-                                field="schema:datePublished"
-                                data="{{articlesData}}"
-                                type="line"
-                                id="line-chart"
-                                extra-id="line-chart"
-                                filters="{{filters}}"
-                                height="350"
-                                sources="{{sources}}"
-                                icon="icons:trending-up"
-                                options='{"title": "Distribución en el tiempo de las noticias"}'
-                                optionsbi='{"legend": {"position": "bottom"}}'>
-                            </google-chart>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mt-4">
+                                <google-chart
+                                    field="schema:author"
+                                    data="{{articlesData}}"
+                                    type="pie"
+                                    id="pie-chart"
+                                    extra-id="pie-chart"
+                                    height="450"
+                                    filters="{{filters}}"
+                                    sources="{{sources}}"
+                                    icon="icons:donut-small"
+                                    options='{"title": "Noticias"}'
+                                    optionsbi='{"is3D": "true"}'>
+                                </google-chart>
+                            </div>
+
+                            <div class="col-12 col-md-6 mt-4">
+                                <radar-chart
+                                    data="{{articlesData}}"
+                                    entity="categories.name"
+                                    height="450"
+                                    bartitle="Categorías"
+                                    filters="{{filters}}">
+                                </radar-chart>
+                            </div>
                         </div>
+
+                        <div class= "row">
+                            <div class="col-12 mt-4">
+                                <google-chart
+                                    field="schema:datePublished"
+                                    data="{{articlesData}}"
+                                    type="line"
+                                    id="line-chart"
+                                    extra-id="line-chart"
+                                    filters="{{filters}}"
+                                    height="350"
+                                    sources="{{sources}}"
+                                    icon="icons:trending-up"
+                                    options='{"title": "Distribución en el tiempo de las noticias"}'
+                                    optionsbi='{"legend": {"position": "bottom"}}'>
+                                </google-chart>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6 mt-4">
+                                <entities-chart
+                                    field="entities.name"
+                                    data="{{articlesData}}"
+                                    bartitle="Entidades"
+                                    height="400"
+                                    icon="icons:list"
+                                    param="{{param}}"
+                                    id="entitieschart"
+                                    filters="{{filters}}"
+                                    legend='[{"name":"Organización","type":"schema:Organization","color":"#dd4b39"},
+                                             {"name":"Lugar","type":"schema:Place","color":"#ff9900"},
+                                             {"name": "Persona","type":"schema:Person","color":"#00c0ef"}]'>
+                                </entities-chart>
+                            </div>
+
+                            <div class="col-12 col-md-6 mt-4">
+                                <simple-heatmap
+                                    data="{{articlesData}}"
+                                    height="400"
+                                    bartitle="Localización de las noticias"
+                                    filters="{{filters}}">    
+                                </simple-heatmap>
+                            </div>
+                        </div>
+
                     </div>
-
-                    <div class="row">
-                        <div class="col-12 col-md-6 mt-4">
-                            <entities-chart
-                                field="entities.name"
-                                data="{{articlesData}}"
-                                bartitle="Entidades"
-                                height="400"
-                                icon="icons:list"
-                                param="{{param}}"
-                                id="entitieschart"
-                                filters="{{filters}}"
-                                legend='[{"name":"Organización","type":"schema:Organization","color":"#dd4b39"},
-                                         {"name":"Lugar","type":"schema:Place","color":"#ff9900"},
-                                         {"name": "Persona","type":"schema:Person","color":"#00c0ef"}]'>
-                            </entities-chart>
-                        </div>
-
-                        <div class="col-12 col-md-6 mt-4">
-                            <simple-heatmap
-                                data="{{articlesData}}"
-                                height="400"
-                                bartitle="Localización de las noticias"
-                                filters="{{filters}}">    
-                            </simple-heatmap>
-                        </div>
-                    </div>
-
-                </div>
-            </iron-pages>
-        </div>   
+                </iron-pages>
+            </div>
+        </div>
 
         <div class="footer">
             <img class="catedra_logo" src="img/catedra_logo.svg">

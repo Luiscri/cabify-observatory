@@ -1,3 +1,33 @@
+:root {
+  --bp-small: 48em; 
+  --bp-medium: 64em;
+  --bp-large: 85.375em;
+  --bp-xlarge: 120em;
+  --bp-xxlarge: 160em;
+}
+
+.my-container {
+  margin: 0 4%;
+}
+
+@media screen and (min-width: var(--bp-medium)){
+  .my-container {
+    margin: 0 8%;
+  }
+}
+
+@media screen and (min-width: var(--bp-large)){
+  .my-container {
+    margin: 0 12%;
+  }
+}
+
+@media screen and (min-width: var(--bp-xlarge)){
+  .my-container {
+    margin: 0 18%;
+  }
+}
+
 paper-material{
   background: white;
 }
