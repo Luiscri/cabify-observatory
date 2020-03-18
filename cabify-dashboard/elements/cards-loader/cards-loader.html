@@ -1,0 +1,213 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/elements/article-viewer/article-viewer.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+
+<dom-module id="cards-loader">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="import" type="css" href="cards-loader.css">
+
+    <template>
+        <div class="row">
+            <div class="card-deck">
+                <template is="dom-repeat" items="{{showing}}" as="card">
+                    <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-4 mb-md-5">
+                        <div
+                            class="card"
+                            title$="{{card.schema:headline}}"
+                            on-tap="showViewer"
+                            data-id$="[[card.id]]"
+                        >
+                            <img
+                                class="card-img-top img-fluid vertical-image"
+                                src$="{{getCardImage(card)}}"
+                                onerror$="this.src='{{defaultimage}}'"
+                                alt="{{getCardDescription(card)}}"
+                            />
+                            <div class="card-body py-2">
+                                <div class="card-title">
+                                    <div class="d-flex justify-content-start align-items-center mb-2">
+                                        <img class="icon-sm mr-2 img-fluid" src={{getFavIcon(card)}}>
+                                        <span class="medium-text">
+                                            {{getSources(card)}}
+                                        </span>
+                                    </div>
+                                    <p class="card-text primary-headline medium-text">
+                                        {{card.schema:headline}}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="categories-container">
+                                    <span class="medium-text">Categorías:</span>
+                                    <template is="dom-repeat" items="{{getCategories(card)}}" as="category">
+                                        <span
+                                            class="badge p-1 m-1"
+                                            on-tap="highlightExcerpt"
+                                            style$="background-color: {{getBadgeBackground(category)}};"
+                                        >
+                                            {{category}}
+                                        </span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-center">
+            <div
+                class="circle plus"
+                id="loadmore"
+                style$="background-color: #{{maincolor}};"
+                on-tap="addCards"
+            ></div>
+        </div>
+
+        <article-viewer
+            data=""
+            maincolor="{{maincolor}}"
+            defaultimage="{{defaultimage}}">
+        </article-viewer>
+
+    </template>
+
+    <script>
+        var filtered = false;
+
+        Polymer({
+            is: 'cards-loader',
+            properties: {
+                data: {
+                    type: Object,
+                    observer: '_dataChanged'              
+                },
+
+                maincolor: {
+                    type: String,
+                    value: '354169'
+                },
+
+                cards: {
+                    type: Array,
+                    value: [],
+                },
+
+                showing: {
+                    type: Array,
+                    value: []
+                },
+
+                index: {
+                    type: Number,
+                    value: 0
+                },
+
+                defaultimage: {
+                    type: String,
+                    value: '/elements/cards-loader/assets/img/defaultImage.jpg'
+                }
+            },
+
+            _dataChanged: function() {
+                let hits = this.data.hits.hits;
+                let results = []        
+                hits.forEach(function(hit) {
+                    results.push(hit._source);
+                });
+
+                this.cards = results;
+                this.index = Math.min(9, results.length);
+                this.showing = results.slice(0, this.index);
+
+                if(results.length <= 9)
+                    document.getElementById('loadmore').style.display = "none";
+                else
+                    document.getElementById('loadmore').style.display = "inline";
+            },
+
+            addCards: function(e, detail) {
+                let from = this.index;
+                let to = Math.min(from+9, this.cards.length);
+
+                that = this;
+                this.cards.slice(from, to).forEach(function(card){
+                    that.push('showing', card);
+                });
+
+                if(to === this.cards.length)
+                    document.getElementById('loadmore').style.display = "none";
+                this.index = to;
+            },
+
+            showViewer: function(e, detail) {
+                let id = e.target.closest('.card').dataset.id;
+                let clicked;
+
+                for(let card of this.cards){
+                    if(card['id'] === id){
+                        clicked = card;
+                        break;
+                    }
+                }
+
+                Polymer.dom(this.root).querySelector('article-viewer').data = clicked;
+                Polymer.dom(this.root).querySelector('article-viewer').display = true;
+                document.body.style.overflow = "hidden";
+            },
+
+            getCategories: function(card){
+                var tags = [];
+                card.taxonomies.forEach(function(taxonomy) {
+                    var str = taxonomy['rdfs:label'];
+                    mySubString = str.slice(1,str.substr(str.indexOf("/") + 1).indexOf("/")+1);
+                    tags.push(mySubString);
+                });
+                taxs = new Set(tags);
+                return Array.from(taxs);
+            },
+
+            getBadgeBackground: function(item){
+                mySubString = item;
+                if(mySubString === "Transporte Sostenible")
+                    color = "#4ec499"
+                else if(mySubString === "Beneficios")
+                    color = "#6c76ed"
+                else if(mySubString === "Infraestructuras y politicas sostenibles")
+                    color = "#dcde3f"
+                else if(mySubString === "Tecnologia")
+                    color = "#b556ff"
+                else
+                    color = "#5f5755"
+                return color;
+            },
+
+            getCardImage: function(card) {
+                if('schema:thumbnailUrl' in card && card['schema:thumbnailUrl'])
+                    return card['schema:thumbnailUrl'];
+                return this.defaultimage;
+            },
+
+            getCardDescription: function(card) {
+                if('schema:description' in card)
+                    return card['schema:description'].replace(/\.\.\.|…/g, '[...]');
+                return '';
+            },
+
+            getSources: function(card) {
+                source = card.id;
+                let match = source.match(/:\/\/([0-9]?\.)?(.[^/:]+)/i);
+                if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+                  return match[2];
+                }
+                return null
+            },
+
+            getFavIcon: function(card) {
+                source = this.getSources(card);
+                return "http://www.google.com/s2/favicons?domain=" + source;
+            }
+        });
+    </script>
+</dom-module>

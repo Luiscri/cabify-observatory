@@ -300,9 +300,11 @@
             },
 
             getArticleImage: function(article) {
-                if(article)
-                    return article['schema:thumbnailUrl'];
-                return '';
+                if(article){
+                    if('schema:thumbnailUrl' in article && article['schema:thumbnailUrl'])
+                        return article['schema:thumbnailUrl'];
+                }
+                return this.defaultimage;
             },
 
             getArticleId: function(article) {

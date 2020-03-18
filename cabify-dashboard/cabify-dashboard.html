@@ -6,7 +6,7 @@
 <link rel="import" href="/elements/material-search/material-search.html">
 <link rel="import" href="/elements/tweet-chart/tweet-chart.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
-<link rel="import" href="/elements/articles-loader/articles-loader.html">
+<link rel="import" href="/elements/cards-loader/cards-loader.html">
 <link rel="import" href="/elements/filters-viewer/filters-viewer.html">
 <link rel="import" href="/elements/google-chart-elasticsearch/google-chart.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
@@ -61,11 +61,11 @@
 
                 <iron-pages selected={{selected}}>
                     <div class="mt-4">
-                        <articles-loader
+                        <cards-loader
                             data="{{articlesData}}"
                             filters="{{filters}}"
                         >
-                        </articles-loader>
+                        </cards-loader>
                     </div>
 
                     <div>
