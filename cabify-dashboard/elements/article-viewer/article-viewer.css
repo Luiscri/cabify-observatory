@@ -150,16 +150,23 @@
 *     Content     *
 ******************/
 
+.wrap-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 .badge {
     cursor: pointer;
+    color: white;
+    margin: 2px;
 }
 
 .square {
     width: 10px;
     height: 10px;
-    float: left;
     margin-right: 3px;
-    margin-left: 6px;
 }
 
 .place {
@@ -195,8 +202,8 @@
 }
 
 .article-headline {
-    font-size: 35px;
-    line-height: 35px;
+    font-size: 25px;
+    line-height: 25px;
 }
 
 @media only screen and (max-width: 768px) {

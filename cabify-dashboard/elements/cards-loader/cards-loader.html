@@ -13,9 +13,7 @@
                     <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-4 mb-md-5">
                         <div
                             class="card"
-                            title$="{{card.schema:headline}}"
                             on-tap="showViewer"
-                            data-id$="[[card.id]]"
                         >
                             <img
                                 class="card-img-top img-fluid vertical-image"
@@ -38,7 +36,6 @@
                             </div>
                             <div class="card-footer">
                                 <div class="categories-container">
-                                    <span class="medium-text">Categorías:</span>
                                     <template is="dom-repeat" items="{{getCategories(card)}}" as="category">
                                         <span
                                             class="badge p-1 m-1"
@@ -142,17 +139,7 @@
             },
 
             showViewer: function(e, detail) {
-                let id = e.target.closest('.card').dataset.id;
-                let clicked;
-
-                for(let card of this.cards){
-                    if(card['id'] === id){
-                        clicked = card;
-                        break;
-                    }
-                }
-
-                Polymer.dom(this.root).querySelector('article-viewer').data = clicked;
+                Polymer.dom(this.root).querySelector('article-viewer').data = e.model.__data__.card;
                 Polymer.dom(this.root).querySelector('article-viewer').display = true;
                 document.body.style.overflow = "hidden";
             },

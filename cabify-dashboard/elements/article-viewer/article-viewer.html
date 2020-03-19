@@ -73,7 +73,7 @@
                     <div class="row mb-2">
                         <div class="col-12 col-md-6 d-flex justify-content-start align-items-center">
                             <img class="icon-sm mr-2 " src={{getFavIcon(article)}}>
-                            <a class="medium-text article-author" target="_blank" href$="https://{{getSources(article)}}">
+                            <a class="medium-text article-author" target="_blank" href="{{getArticleId(article)}}">
                                 {{getSources(article)}}
                             </a>
                         </div>
@@ -83,43 +83,58 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
+                    <div class="row mb-1">
                         <div class="col-12">
-
-                            <div class="d-flex align-items-center medium-text">
-                                <strong class="m-1">Entidades: </strong>
-                                <div class="square place" style="margin-left: 0px;"></div>Lugar
-                                <div class="square organization"></div>Organización
-                                <div class="square person"></div>Persona
+                            <div class="article-headline medium-text mb-1">Entidades:</div>
+                            <div class="wrap-container medium-text">
+                                <div class="d-flex align-items-center mr-1">
+                                    <div class="square place" style="margin-left: 0px;"></div>Lugar                                    
+                                </div>
+                                <div class="d-flex align-items-center mr-1">
+                                    <div class="square organization"></div>Organización                                    
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="square person"></div>Persona
+                                </div>
+                            </div>
+                            <div class="wrap-container">
+                                <template is="dom-repeat" items="{{article.entities}}" as="entity">
+                                    <div
+                                        class="badge p-1"
+                                        on-tap="highlightExcerpt"
+                                        style$="background-color: {{getEntityColor(entity)}};"
+                                    >
+                                        {{entity.schema:name}}
+                                    </div>
+                                </template>
                             </div>
 
-                            <template is="dom-repeat" items="{{article.entities}}" as="entity">
-                                <span
-                                    class="badge badge-secondary p-1"
-                                    on-tap="highlightExcerpt"
-                                    style$="background-color: {{getBadgeBackgroundEntity(entity)}};"
-                                >
-                                    {{entity.schema:name}}
-                                </span>
-                            </template>
-
-                            <div class="d-flex align-items-center medium-text">
-                                <strong class="m-1">Categorías: </strong>
-                                <div class="square transport" style="margin-left: 0px;"></div>Transporte Sostenible
-                                <div class="square beneficios"></div>Beneficios
-                                <div class="square infrpolitc"></div>Infraestructuras y Políticas Sostenibles
-                                <div class="square tecnologia"></div>Tecnologías
+                            <div class="article-headline medium-text my-1">Categorías:</div>
+                            <div class="wrap-container medium-text">
+                                <div class="d-flex align-items-center mr-1">
+                                    <div class="square infrpolitc"></div>Infraestructuras y Políticas Sostenibles
+                                </div>
+                                <div class="d-flex align-items-center mr-1">
+                                    <div class="square beneficios"></div>Beneficios
+                                </div>
+                                <div class="d-flex align-items-center mr-1">
+                                    <div class="square transport" style="margin-left: 0px;"></div>Transporte Sostenible
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="square tecnologia"></div>Tecnologías
+                                </div>
                             </div>
-                            <template is="dom-repeat" items="{{article.taxonomies}}" as="entity">
-                                <span
-                                    class="badge badge-secondary p-1"
-                                    on-tap="highlightExcerpt"
-                                    style$="background-color: {{getBadgeBackgroundCategory(entity)}};"
-                                >
-                                    {{getCategoryName(entity)}}
-                                </span>
-                            </template>
-
+                            <div class="wrap-container">
+                                <template is="dom-repeat" items="{{article.taxonomies}}" as="entity">
+                                    <span
+                                        class="badge p-1"
+                                        on-tap="highlightExcerpt"
+                                        style$="background-color: {{getCategoryColor(entity)}};"
+                                    >
+                                        {{getCategoryName(entity)}}
+                                    </span>
+                                </template>                                
+                            </div>
                         </div>
                     </div>
 
@@ -200,14 +215,15 @@
             },       
 
             hideArticle: function() {
-                document.getElementById("viewer-container").scrollBy({top: 0, left: 0});
+                let container = document.getElementById("viewer-container");
+                container.scrollBy({top: -container.scrollTop, left: 0});
                 this.display = false;
                 
                 document.body.style.overflow = "scroll";
                 document.body.style.overflowX = "hidden";
             },
 
-            getBadgeBackgroundEntity: function(item){
+            getEntityColor: function(item){
                 if(item["@type"][0] === "schema:Place")
                     color = "#ff9900"
                 else if(item["@type"][0] === "schema:Organization")
@@ -220,9 +236,9 @@
                 return color;
             },
 
-            getBadgeBackgroundCategory: function(item){
-                var str = item['rdfs:label'];
-                mySubString = str.slice(1,str.substr(str.indexOf("/") + 1).indexOf("/")+1);
+            getCategoryColor: function(item) {
+                let str = item['rdfs:label'];
+                let mySubString = str.slice(1,str.substr(str.indexOf("/") + 1).indexOf("/")+1);
                 if(mySubString === "Transporte Sostenible")
                     color = "#4ec499"
                 else if(mySubString === "Beneficios")
@@ -236,64 +252,65 @@
                 return color;
             },
 
-            getCategoryName: function(taxonomy){
+            getCategoryName: function(taxonomy) {
                 var tag = taxonomy['rdfs:label']
                 return tag.substr(tag.lastIndexOf("/")+1);
             },
 
-            highlightExcerpt: function(e) {
-                var element = document.getElementById("article-body")
-                var text = this.getArticleBody(this.article)
-                var text_highlighted=""
-                var beginIndex = e.model.__data__.entity["nif:beginIndex"]
-                var endIndex = e.model.__data__.entity["nif:endIndex"]
-                var cnt=0
+            getEntityLink: function(entity) {
+                if('prov:wasDerivedFrom' in entity && entity['prov:wasDerivedFrom']){
+                    let from = entity['prov:wasDerivedFrom']
+                    if('dbpedia' in from && from['dbpedia'])
+                        return from['dbpedia'];
+                    else if('babelnet' in from && from['babelnet'])
+                        return from['babelnet'];
+                }
+                return '';
+            },
 
-                if(typeof e.model.__data__.entity["@type"] === "string"){
-                    var str = e.model.__data__.entity['rdfs:label'];
-                    mySubString = str.slice(1,str.substr(str.indexOf("/") + 1).indexOf("/")+1);
-                    if(mySubString === "Transporte Sostenible")
-                        color = "#4ec499"
-                    else if(mySubString === "Beneficios")
-                        color = "#6c76ed"
-                    else if(mySubString === "Infraestructuras y politicas sostenibles")
-                        color = "#dcde3f"
-                    else if(mySubString === "Tecnologia")
-                        color = "#b556ff"
-                    else
-                        color = "#5f5755"
+            highlightExcerpt: function(e) {
+                let element = document.getElementById("article-body")
+                let text = this.getArticleBody(this.article)
+                let text_highlighted=""
+                let entity = e.model.__data__.entity
+                let beginIndex = entity["nif:beginIndex"]
+                let endIndex = entity["nif:endIndex"]
+                let cnt=0
+
+                let color = '';
+                if(typeof entity["@type"] === "string"){
+                    color = this.getCategoryColor(entity)
                 }
                 else{
-                    if(e.model.__data__.entity["@type"][0] === "schema:Place")
-                        color = "#ff9900"
-                    else if(e.model.__data__.entity["@type"][0] === "schema:Organization")
-                        color = "#dd4b39"
-                    else if(e.model.__data__.entity["@type"][0] === "schema:Person")
-                        color = "#00c0ef"
-                    else
-                        color = "#5f5755"
+                    color = this.getEntityColor(entity)
                 }
-                console.log(color)
 
+                let link = this.getEntityLink(entity)
                 if (beginIndex[0] >= 0) {
                     if(text[beginIndex[0]]===' ')
                         cnt+=1
-                    text_highlighted = text.substring(0,beginIndex[0]+cnt) + "<span id='locator' style='background-color:"+color+"; color:white; font-weight:bold'>" + text.substring(beginIndex[0]+cnt,endIndex[0]+1+cnt) + "</span>"
+                    text_highlighted = text.substring(0,beginIndex[0]+cnt) + "<a href='"+link+"' target='_blank' class='locator' style='background-color:"+color+"; color:white; font-weight:bold; text-decoration: none;'>" + text.substring(beginIndex[0]+cnt,endIndex[0]+cnt) + "</a>"
                     for(var i =1 ; i<beginIndex.length;i++){
                         if(text[beginIndex[i]+cnt]===' ')
                             cnt+=1
-                        text_highlighted+=text.substring(endIndex[i-1]+1+cnt,beginIndex[i]+cnt)
-                        text_highlighted+="<span style='background-color:"+color+"; color:white; font-weight:bold'>"
-                        text_highlighted+=text.substring(beginIndex[i]+cnt,endIndex[i]+1+cnt)
-                        text_highlighted+="</span>"
+                        text_highlighted+=text.substring(endIndex[i-1]+cnt,beginIndex[i]+cnt)
+                        text_highlighted+="<a href='"+link+"' target='_blank' class='locator' style='background-color:"+color+"; color:white; font-weight:bold; text-decoration: none;'>"
+                        text_highlighted+=text.substring(beginIndex[i]+cnt,endIndex[i]+cnt)
+                        text_highlighted+="</a>"
                     }
-                    text_highlighted+= text.substring(endIndex[endIndex.length-1]+1+cnt)
+                    text_highlighted+= text.substring(endIndex[endIndex.length-1]+cnt)
                     element.innerHTML = text_highlighted
 
+                    //Disable anchor if link is empty
+                    let elmnts = document.getElementsByClassName("locator");
+                    for(elmnt of elmnts){
+                        if(!link)
+                            elmnt.removeAttribute('href');
+                    }                    
+
                     //Dynamic Scroll
-                    let elmnt = document.getElementById("locator");
                     let wrapper = document.getElementById("viewer-container");
-                    let count = elmnt.offsetTop - wrapper.scrollTop + 200;
+                    let count = elmnts[0].offsetTop - wrapper.scrollTop + 200;
                     wrapper.scrollBy({top: count, left: 0, behavior: 'smooth'});                    
                 }
                 
@@ -337,6 +354,12 @@
                     return "http://www.google.com/s2/favicons?domain=" + source;
                 }
                 return ''
+            },
+
+            getArticleId: function(article) {
+                if(article)
+                    return article.id;
+                return '';
             },
 
             getArticleDate: function(article) {

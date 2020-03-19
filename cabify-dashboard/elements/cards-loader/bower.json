@@ -1,16 +1,17 @@
 {
-  "name": "article-viewer",
+  "name": "cards-loader",
   "authors": [
     "Luis Cristobal Lopez Garcia",
     "gsi"
   ],
   "version":"1.0.0",
-  "description": "A styled frame for displaying a full article information.",
-  "main": "article-viewer.html",
+  "description": "A styled frame for displaying a set of cards.",
+  "main": "cards-loader.html",
   "keywords": [
-    "notice",
-    "article",
-    "image",
+    "card",
+    "cards",
+    "loader",
+    "frame",
     "polymer",
     "webcomponents"
   ],
