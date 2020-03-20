@@ -376,16 +376,6 @@
 
             getArticleBody: function(article) {
                 if(article){
-                    /*
-                    let response = "";
-                    let text = article['schema:articleBody'].replace(/\n/g, '\n');
-                    let paragraphs = text.split('\n');
-                    paragraphs.forEach(function(paragraph){
-                        response += "<p>" + paragraph + "</p>";
-                    });
-
-                    return response
-                    */
                     return article['schema:articleBody']
                 }
                 return ''
