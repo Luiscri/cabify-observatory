@@ -22,8 +22,11 @@
         <nav 
             class="navbar navbar-expand-md navbar-dark justify-content-end align-items-center"
             style$="background-color: {{maincolor}};"
-        >
-            <a class="navbar-brand flex-md-grow-1 mr-3" style="font-size: 40px;" href="/">Logotipo</a>
+        >   
+            <div class="flex-md-grow-1">
+                <a class="navbar-brand mr-3" style="font-size: 40px;" href="/">Logotipo</a>
+            </div>
+            
             
             <div class="input-group w-auto d-flex justify-content-end flex-grow-1 mr-2">
                 <input id="query-input" type="text" class="form-control h-auto" placeholder="Filtrar" value="{{query::input}}">

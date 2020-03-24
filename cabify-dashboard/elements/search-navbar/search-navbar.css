@@ -9,6 +9,22 @@
 
 .nav-link {
 	font-size: 1.25rem;
+	width: max-content;
+	align-self: flex-end;
+}
+
+.active {
+	position: relative;
+}
+
+.active:before {
+	content: "";
+	height: 2px;
+	width: 100%;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	background-color: white;
 }
 
 #search-button{
