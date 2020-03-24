@@ -1,5 +1,6 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/elements/article-viewer/article-viewer.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
 
 <dom-module id="cards-loader">
@@ -8,9 +9,13 @@
 
     <template>
         <div class="row">
+            <div id="no-data" class="w-100 text-center">
+                <iron-icon icon="error-outline" class="error-icon"></iron-icon>
+                <div class="bold-text" style="font-size: 1.5rem;">No hay noticias que cumplan con los filtros introducidos</div>
+            </div>
             <div class="card-deck">
                 <template is="dom-repeat" items="{{showing}}" as="card">
-                    <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-4 mb-md-5">
+                    <div class="col-12 col-sm-6 col-md-4 d-flex flex-column mb-3 mb-md-4">
                         <div
                             class="card"
                             on-tap="showViewer"
@@ -109,6 +114,8 @@
 
             _dataChanged: function() {
                 let hits = this.data.hits.hits;
+                document.getElementById('no-data').style.display = 'none';
+
                 let results = []        
                 hits.forEach(function(hit) {
                     results.push(hit._source);
@@ -122,6 +129,9 @@
                     document.getElementById('loadmore').style.display = "none";
                 else
                     document.getElementById('loadmore').style.display = "inline";
+
+                if(hits.length === 0)
+                    document.getElementById('no-data').style.display = 'block';
             },
 
             addCards: function(e, detail) {

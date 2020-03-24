@@ -101,6 +101,15 @@
 *     Content     *
 ******************/
 
+#no-data {
+    display: none;
+}
+
+.error-icon {
+    width: 80px;
+    height: auto;
+}
+
 .primary-headline {
     font-size: 22px;
     line-height: 22px;
