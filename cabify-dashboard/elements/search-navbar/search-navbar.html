@@ -32,7 +32,7 @@
             </div>         
             
             <div class="input-group w-auto d-flex justify-content-end flex-grow-1 mr-2">
-                <input id="query-input" type="text" class="form-control h-auto" placeholder="Filtrar" value="{{query::input}}">
+                <input disabled id="query-input" type="text" class="form-control h-auto" placeholder="Filtrar" value="{{query::input}}">
                 <div class="input-group-append" on-tap="handleInput">
                     <button id="search-button" class="btn" type="button">
                         <iron-icon icon="search"></iron-icon>
@@ -90,14 +90,17 @@
             handleInput: function(){
                 let input = document.getElementById('query-input');
                 let button = document.getElementById('search-button');
+                console.log(input.disabled)
                 if(input.disabled){
                     button.style.backgroundColor = '#ced4da';
                     button.style.color = this.maincolor;
+                    button.blur();
                     input.disabled = false;
                     input.style.transform = 'scaleX(1)';
                 }else{
                     button.style.backgroundColor = 'transparent';
                     button.style.color = 'white';
+                    button.blur();
                     input.disabled = true;
                     input.style.transform = 'scaleX(0)'
                 }

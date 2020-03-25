@@ -1,0 +1,25 @@
+{
+  "name": "search-navbar",
+  "authors": [
+    "Luis Cristobal Lopez Garcia",
+    "gsi"
+  ],
+  "version":"1.0.0",
+  "description": "A completely responsive navbar with search included for your dashboard.",
+  "main": "search-navbar.html",
+  "keywords": [
+    "navigation",
+    "nav",
+    "navbar",
+    "search",
+    "filter",
+    "polymer",
+    "webcomponents"
+  ],
+  "dependencies": {
+    "polymer": "polymer#*",
+    "iron-icons": "PolymerElements/iron-icons#*"
+  },
+  "license": "MIT",
+  "homepage": "https://lab.gsi.upm.es/sefarad"
+}
