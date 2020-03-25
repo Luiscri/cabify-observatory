@@ -30,22 +30,23 @@
 #search-button{
 	z-index: 0;
 	cursor: pointer;
-	/*background-color: white;
-	color: #354169;*/
 	color: white;
-	/*border: 1px solid #ced4da;*/
 	border-radius: 0 5px 5px 0;
 }
 
 #query-input {
-	-webkit-transition: all .5s;
-	-moz-transition: all .5s;
-	-ms-transition: all .5s;
-	-o-transition: all .5s;
- 	transition: all .5s;
+	-webkit-transition: transform .5s;
+	-moz-transition: transform .5s;
+	-ms-transition: transform .5s;
+	-o-transition: transform .5s;
+ 	transition: transform .5s;
 
- 	visibility: hidden;
-	opacity: 0;
+ 	-webkit-transform: scale(0);
+ 	-moz-transform: scale(0);
+	-ms-transform: scale(0);
+ 	-o-transform: scale(0);
+	transform: scale(0);
+	transform-origin: right;
 	width: 0; /* Do not change */
 	border-radius: 5px 0 0 5px;
 }

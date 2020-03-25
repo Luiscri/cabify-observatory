@@ -1,32 +1,35 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/bower_components/iron-icons/iron-icons.html">
-<!-- Do not import this if you have already loaded jQuery and bootstrap.js files in another component or index 
+<!-- Do not import this if you have already loaded jQuery, popper and bootstrap.js in another component or index page 
 <script
     src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
     crossorigin="anonymous">
 </script>
 <script
-    src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous">
+</script>
+<script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
 </script>
 -->
 
 <dom-module id="search-navbar">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="import" type="css" href="search-navbar.css">
 
     <template>
-        
         <nav 
             class="navbar navbar-expand-md navbar-dark justify-content-end align-items-center"
             style$="background-color: {{maincolor}};"
         >   
             <div class="flex-md-grow-1">
                 <a class="navbar-brand mr-3" style="font-size: 40px;" href="/">Logotipo</a>
-            </div>
-            
+            </div>         
             
             <div class="input-group w-auto d-flex justify-content-end flex-grow-1 mr-2">
                 <input id="query-input" type="text" class="form-control h-auto" placeholder="Filtrar" value="{{query::input}}">
@@ -87,16 +90,16 @@
             handleInput: function(){
                 let input = document.getElementById('query-input');
                 let button = document.getElementById('search-button');
-                if(input.style.visibility === 'hidden'){
+                if(input.disabled){
                     button.style.backgroundColor = '#ced4da';
                     button.style.color = this.maincolor;
-                    input.style.visibility = 'visible';
-                    input.style.opacity = 1;
+                    input.disabled = false;
+                    input.style.transform = 'scaleX(1)';
                 }else{
                     button.style.backgroundColor = 'transparent';
                     button.style.color = 'white';
-                    input.style.visibility = 'hidden';
-                    input.style.opacity = 0;
+                    input.disabled = true;
+                    input.style.transform = 'scaleX(0)'
                 }
                 
             }
