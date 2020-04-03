@@ -1,18 +1,19 @@
 {
-  "name": "search-navbar",
+  "name": "iron-pages-navbar",
   "authors": [
     "Luis Cristobal Lopez Garcia",
     "gsi"
   ],
   "version":"1.0.0",
-  "description": "A completely responsive navbar with search included for your dashboard.",
-  "main": "search-navbar.html",
+  "description": "A Polymer element of a completely responsive navbar for your iron-pages navigation.",
+  "main": "iron-pages-navbar.html",
   "keywords": [
     "navigation",
     "nav",
     "navbar",
     "search",
     "filter",
+    "iron-pages",
     "polymer",
     "webcomponents"
   ],

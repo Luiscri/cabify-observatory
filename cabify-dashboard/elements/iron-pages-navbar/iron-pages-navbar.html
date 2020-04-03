@@ -18,9 +18,9 @@
 </script>
 -->
 
-<dom-module id="search-navbar">
+<dom-module id="iron-pages-navbar">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="import" type="css" href="search-navbar.css">
+    <link rel="import" type="css" href="iron-pages-navbar.css">
 
     <template>
         <nav 
@@ -28,7 +28,7 @@
             style$="background-color: {{maincolor}};"
         >   
             <div class="flex-md-grow-1">
-                <a class="navbar-brand mr-3" style="font-size: 40px;" href="/">Logotipo</a>
+                <a class="navbar-brand mr-3" style="font-size: 40px;" href="/">Logo</a>
             </div>         
             
             <div class="input-group w-auto d-flex justify-content-end flex-grow-1 mr-2">
@@ -46,8 +46,9 @@
 
             <div id="main-nav" class="collapse navbar-collapse flex-grow-0 text-right">
                 <div class="navbar-nav">
-                    <a class="nav-item nav-link mr-md-2 active" on-tap="changePage">Noticias</a>
-                    <a id="statistics" class="nav-item nav-link" on-tap="changePage">Estadísticas</a>
+                    <template is="dom-repeat" items="{{links}}" as="link">
+                        <a id$="{{link.id}}" class$="nav-item nav-link mr-md-2 {{link.class}}" href$="{{link.href}}" target$="{{link.target}}" on-tap="changePage">{{link.title}}</a>
+                    </template>
                 </div>
             </div>     
         </nav>
@@ -57,13 +58,18 @@
         var filtered = false;
 
         Polymer({
-            is: 'search-navbar',
+            is: 'iron-pages-navbar',
             properties: {
                 selected: {
                     type: Number,
                     notify: true,
                     value: 0
-                }, 
+                },
+
+                links: {
+                    type: Array,
+                    value: function() { return []; }
+                },
 
                 maincolor: {
                     type: String,
@@ -76,15 +82,23 @@
                 }
             },
 
-            changePage: function(e){
-                let links = document.getElementsByClassName('nav-link')
-                for(link of links){
-                    link.classList.remove("active")
-                }
+            attached: function(){
+                let links = document.getElementsByClassName('nav-link');
+                links[this.selected].classList.add("active");
+                links[links.length-1].classList.remove("mr-md-2");
+            },
 
+            changePage: function(e){
                 let clicked = e.target
-                clicked.classList.add("active")
-                this.selected = Array.prototype.indexOf.call(links, clicked);
+                if(!clicked.href){
+                    let links = document.getElementsByClassName('nav-link')
+                    for(link of links){
+                        link.classList.remove("active")
+                    }
+
+                    clicked.classList.add("active")
+                    this.selected = Array.prototype.indexOf.call(links, clicked);                    
+                }
             },
 
             handleInput: function(){

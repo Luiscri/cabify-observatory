@@ -1,6 +1,6 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 <link rel="import" href="/elements/simple-heatmap/simple-heatmap.html">
-<link rel="import" href="/elements/search-navbar/search-navbar.html">
+<link rel="import" href="/elements/iron-pages-navbar/iron-pages-navbar.html">
 <link rel="import" href="/elements/number-chart/number-chart.html">
 <link rel="import" href="/elements/cards-loader/cards-loader.html">
 <link rel="import" href="/elements/filters-viewer/filters-viewer.html">
@@ -34,10 +34,23 @@
 
     <template>
         <div class="d-flex flex-column justify-content-between h-100">
-            <search-navbar
+            <iron-pages-navbar
                 selected="{{selected}}"
+                links='[
+                    {
+                        "title": "Link1",
+                        "id": "myid",
+                        "class": "class1 class2"
+                    },
+                    {
+                        "title": "Link2",
+                        "href": "https://www.otherpage.com",
+                        "target": "_blank"
+                    }
+                ]'
+                maincolor="#354169"
                 query="{{query}}">
-            </search-navbar>
+            </iron-pages-navbar>
 
             <div class="my-container flex-grow-1 my-4">
 
@@ -196,6 +209,10 @@
             observers: [
               '_filtersChanged(filters.splices)'
             ],
+
+            getLinks: function(){
+                return ["Enlace1", "Enlace2"]
+            },
 
             behaviors: [
                 Polymer.IronA11yKeysBehavior
