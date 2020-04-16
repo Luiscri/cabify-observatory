@@ -206,10 +206,6 @@
               '_filtersChanged(filters.splices)'
             ],
 
-            getLinks: function(){
-                return ["Enlace1", "Enlace2"]
-            },
-
             behaviors: [
                 Polymer.IronA11yKeysBehavior
             ],
@@ -359,8 +355,8 @@
                                 'schema:datePublished': {
                                     date_histogram: {
                                         field: "schema:datePublished",
-                                        format: "MM-yyyy-dd",
-                                        interval: "day"
+                                        format: "MM-yyyy",
+                                        interval: "month"
                                     },
                                     aggs:{
                                         source:{
