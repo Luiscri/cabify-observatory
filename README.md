@@ -14,8 +14,8 @@ http://observatory-cabify.gsi.upm.es
 ```
 
 ## Authors
-1. Álvaro de Pablo Marsal
-2. Luis Cristóbal López García
+1. Luis Cristóbal López García
+2. Álvaro de Pablo Marsal
 
 ## Requirements
 
